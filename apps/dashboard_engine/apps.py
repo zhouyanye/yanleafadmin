@@ -8,8 +8,14 @@ class DashboardEngineConfig(AppConfig):
     def ready(self):
         from django.contrib import admin
         from django.contrib.auth import get_user_model
-        import psutil
         import json
+
+        try:
+            import psutil
+            _has_psutil = True
+        except ImportError:
+            _has_psutil = False
+
         original_index = admin.site.index
 
         def custom_index(request, extra_context=None):
@@ -23,7 +29,7 @@ class DashboardEngineConfig(AppConfig):
                 today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
                 today_count = User.objects.filter(date_joined__gte=today_start).count()
 
-                memory_percent = psutil.virtual_memory().percent
+                memory_percent = psutil.virtual_memory().percent if _has_psutil else 0.0
             except Exception:
                 total_users = 0
                 active_users = 0

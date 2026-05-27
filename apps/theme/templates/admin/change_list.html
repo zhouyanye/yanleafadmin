@@ -167,7 +167,7 @@
                 { extend: 'print', text: '打印' }
             ],
             language: {
-                url: '/static/yanleafadmin/js/i18n/datatables.' + langCode + '.json'
+                url: (window.YLA.staticUrl || '/static/yanleafadmin/') + 'js/i18n/datatables.' + langCode + '.json'
             }
         });
 

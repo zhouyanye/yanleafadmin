@@ -200,6 +200,22 @@ yanleaf_admin_project/
 └── README.md
 ```
 
+### URL 配置
+
+如果使用了 ER 图、AI 助手等功能，需要在 `urls.py` 中添加对应路由：
+
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),   # 语言切换（必须）
+    path('admin/', admin.site.urls),
+    path('admin/erd/', include('apps.erd_engine.urls')),  # ER 图
+    path('api/ai/', include('apps.ai_assistant.urls')),   # AI 助手
+    path('yla-api/', include('apps.theme.urls')),          # SmartChart 等
+]
+```
+
 ## YANLEAF_ADMIN 完整配置项
 
 | 配置项 | 类型 | 默认值 | 说明 |

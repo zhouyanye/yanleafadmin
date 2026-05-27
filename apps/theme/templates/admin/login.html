@@ -69,6 +69,7 @@
                     {{ form.password.errors }}
                 </div>
 
+                {% if form.captcha %}
                 <div class="field mb-5">
                     <label class="label is-size-7 has-text-weight-semibold">{% translate '安全验证' %}</label>
                     <div class="captcha-field-wrapper">
@@ -76,6 +77,7 @@
                     </div>
                     {{ form.captcha.errors }}
                 </div>
+                {% endif %}
 
                 <div class="field mt-5">
                     <button class="button is-dark is-fullwidth has-text-weight-medium" type="submit">

@@ -72,7 +72,7 @@
 
     window.YLA.initDataTable = function(tableSelector, options) {
         var langCode = window.YLA.lang || 'zh-hans';
-        var langUrl = '/static/yanleafadmin/js/i18n/datatables.' + langCode + '.json';
+        var langUrl = (window.YLA.staticUrl || '/static/yanleafadmin/') + 'js/i18n/datatables.' + langCode + '.json';
         var defaults = {
             language: { url: langUrl },
             pageLength: 25,

@@ -145,8 +145,11 @@ def er_word_export(request):
     except (json.JSONDecodeError, TypeError):
         return HttpResponse('Invalid data', status=400)
 
-    from docx import Document
-    from docx.shared import Pt
+    try:
+        from docx import Document
+        from docx.shared import Pt
+    except ImportError:
+        return HttpResponse('Word 导出需要安装 python-docx：pip install yanleafadmin[word]', status=500)
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
