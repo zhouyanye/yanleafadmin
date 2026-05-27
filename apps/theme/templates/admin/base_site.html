@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | YanleafAdmin{% endblock %}
+
+{% block sidebar_brand %}
+<div class="sidebar-brand">
+    <a href="{% url 'admin:index' %}" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;">
+        <span class="brand-icon"><i class="fas fa-leaf"></i></span>
+        <span class="brand-text">
+            Yanleaf<span class="brand-sub">Admin</span>
+        </span>
+    </a>
+</div>
+{% endblock %}

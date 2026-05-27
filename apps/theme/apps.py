@@ -23,6 +23,16 @@ class ThemeConfig(AppConfig):
         # 保留 per_page 参数补丁
         self._patch_changelist_per_page()
 
+        # 仪表盘首页（pip install 时自动启用）
+        try:
+            from apps.dashboard_engine.apps import DashboardEngineConfig
+            import apps.dashboard_engine
+            dashboard_cfg = DashboardEngineConfig(apps.dashboard_engine.__name__, apps.dashboard_engine)
+            dashboard_cfg.path = __import__('os').path.dirname(apps.dashboard_engine.__file__)
+            dashboard_cfg.ready()
+        except Exception:
+            pass  # 仪表盘可选
+
     def _patch_changelist_per_page(self):
         from django.contrib.admin.views.main import ChangeList
         from django.core.paginator import Paginator
