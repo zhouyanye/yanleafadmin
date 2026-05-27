@@ -1,0 +1,94 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'zh-hans' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% translate '登录' %} | YanleafAdmin</title>
+
+    <link rel="stylesheet" href="{% static 'yanleafadmin/vendor/fontawesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'yanleafadmin/vendor/bulma/bulma.min.css' %}">
+    <link rel="stylesheet" href="{% static 'yanleafadmin/css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'yanleafadmin/css/login.css' %}">
+
+    <script>
+    (function() {
+        var theme = localStorage.getItem('yla-theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('theme-dark');
+        }
+    })();
+    </script>
+</head>
+
+<body class="login-page">
+
+    <button class="login-dark-toggle" id="login-dark-toggle" title="{% translate '切换暗黑模式' %}">
+        <i class="fas fa-moon" id="login-dark-icon"></i>
+    </button>
+
+    <div class="login-container">
+        <div class="has-text-centered mb-5">
+            <h1 class="title is-3 has-text-weight-bold" style="letter-spacing: -1px;">
+                Yanleaf<span class="has-text-grey-light">Admin</span>
+            </h1>
+            <p class="subtitle is-6 has-text-grey">{% translate '极简白色现代后台主题体系' %}</p>
+        </div>
+
+        <div class="box p-6">
+
+            {% if form.non_field_errors %}
+            <script id="login-non-field-errors" type="application/json">
+            [{% for error in form.non_field_errors %}"{{ error|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+            </script>
+            {% endif %}
+
+            {% if form.errors and not form.non_field_errors %}
+            <script id="login-field-errors-flag" type="application/json">true</script>
+            {% endif %}
+
+            <form action="{{ app_path }}" method="post" id="login-form">
+                {% csrf_token %}
+
+                <div class="field mb-4">
+                    <label class="label is-size-7 has-text-weight-semibold">{% translate '用户名' %}</label>
+                    <div class="control">
+                        <input class="input {% if form.username.errors %}is-danger{% endif %}" type="text"
+                               name="username" autofocus required placeholder="{% translate '请输入用户名' %}">
+                    </div>
+                    {{ form.username.errors }}
+                </div>
+
+                <div class="field mb-4">
+                    <label class="label is-size-7 has-text-weight-semibold">{% translate '密码' %}</label>
+                    <div class="control">
+                        <input class="input {% if form.password.errors %}is-danger{% endif %}" type="password"
+                               name="password" required placeholder="{% translate '请输入密码' %}">
+                    </div>
+                    {{ form.password.errors }}
+                </div>
+
+                <div class="field mb-5">
+                    <label class="label is-size-7 has-text-weight-semibold">{% translate '安全验证' %}</label>
+                    <div class="captcha-field-wrapper">
+                        {{ form.captcha }}
+                    </div>
+                    {{ form.captcha.errors }}
+                </div>
+
+                <div class="field mt-5">
+                    <button class="button is-dark is-fullwidth has-text-weight-medium" type="submit">
+                        {% translate '登录' %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{% static 'yanleafadmin/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'yanleafadmin/vendor/sweetalert2/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'yanleafadmin/js/login.js' %}"></script>
+
+</body>
+</html>

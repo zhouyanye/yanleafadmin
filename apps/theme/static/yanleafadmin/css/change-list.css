@@ -1,0 +1,207 @@
+/* ============================================================
+   YanLeafAdmin — 列表页样式
+   ============================================================ */
+
+#changelist { background: transparent !important; }
+
+/* ── 卡片 ── */
+.cl-card {
+    background: var(--yla-bg-card); border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-lg); box-shadow: var(--yla-shadow-md);
+    overflow: hidden;
+}
+
+/* ── 工具栏 ── */
+#toolbar {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.85rem 1.2rem; border-bottom: 1px solid var(--yla-border);
+    background: var(--yla-bg-hover); flex-wrap: wrap;
+    float: none !important; width: auto !important;
+}
+#toolbar form#changelist-search {
+    flex: 1; min-width: 220px; max-width: 460px;
+    margin: 0 !important; padding: 0 !important;
+}
+#toolbar form#changelist-search div {
+    display: flex; align-items: stretch;
+    border: 1px solid var(--yla-border); border-radius: var(--yla-radius-sm);
+    overflow: hidden; background: var(--yla-bg-input);
+    transition: border-color 0.15s;
+}
+#toolbar form#changelist-search div:focus-within { border-color: var(--yla-text-primary); }
+#toolbar form#changelist-search label { display: none; }
+#toolbar form#changelist-search input[type="text"] {
+    flex: 1; min-width: 0; border: none; background: transparent;
+    padding: 0.42rem 0.7rem; color: var(--yla-text-primary);
+    font-size: 0.84rem; outline: none;
+    box-shadow: none !important; border-radius: 0 !important;
+}
+#toolbar form#changelist-search input[type="text"]::placeholder { color: var(--yla-text-muted); }
+#toolbar form#changelist-search input[type="submit"] {
+    border: none; background: var(--yla-text-primary); color: var(--yla-bg-card);
+    padding: 0.42rem 1rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+    white-space: nowrap; box-shadow: none !important; border-radius: 0 !important;
+}
+#toolbar form#changelist-search input[type="submit"]:hover { opacity: 0.85; }
+#changelist-search .small,
+#changelist-search .quiet { display: none; }
+
+/* ── 添加按钮 ── */
+.cl-add-btn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    background: var(--yla-text-primary); color: var(--yla-bg-card) !important;
+    padding: 0.45rem 1.05rem; border-radius: var(--yla-radius-sm);
+    font-size: 0.82rem; font-weight: 600; text-decoration: none !important;
+    white-space: nowrap; transition: opacity 0.15s;
+}
+.cl-add-btn:hover { opacity: 0.85; }
+
+/* ── 筛选按钮 ── */
+.cl-filter-btn {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.45rem 0.85rem; border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-sm); background: var(--yla-bg-card);
+    color: var(--yla-text-secondary); font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap; transition: all 0.15s;
+}
+.cl-filter-btn:hover, .cl-filter-btn.is-active {
+    border-color: var(--yla-text-primary); color: var(--yla-text-primary);
+}
+
+/* ── 操作栏 ── */
+.actions {
+    display: flex !important; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 1.2rem !important; border-bottom: 1px solid var(--yla-border) !important;
+    flex-wrap: wrap; background: transparent !important;
+}
+/* 隐藏空动作栏（Django 有时渲染空 div） */
+.actions:empty,
+.actions:not(:has(*)) {
+    display: none !important;
+}
+.actions label {
+    font-size: 0.72rem; font-weight: 700; color: var(--yla-text-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+}
+.actions select {
+    background: var(--yla-bg-input); border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-sm); padding: 0.35rem 0.6rem;
+    color: var(--yla-text-primary); font-size: 0.8rem; cursor: pointer; min-width: 140px;
+}
+.actions button {
+    background: var(--yla-text-primary) !important; color: var(--yla-bg-card) !important;
+    border: none !important; border-radius: var(--yla-radius-sm) !important;
+    padding: 0.35rem 0.9rem !important; font-size: 0.78rem !important;
+    font-weight: 600 !important; cursor: pointer; transition: opacity 0.15s;
+}
+.actions button:hover { opacity: 0.85; }
+.action-counter { font-size: 0.75rem; color: var(--yla-text-muted); font-weight: 500; margin-left: 0.25rem; }
+.actions .all, .actions .question, .actions .clear { display: none !important; }
+
+/* ── 空状态 ── */
+.cl-empty { text-align: center; padding: 3rem 2rem; color: var(--yla-text-muted); }
+.cl-empty .cl-empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.3; }
+.cl-empty .cl-empty-text { font-size: 0.95rem; font-weight: 600; color: var(--yla-text-secondary); margin-bottom: 0.3rem; }
+.cl-empty .cl-empty-hint { font-size: 0.78rem; }
+
+/* ── Body ── */
+.cl-body { display: flex; }
+.cl-main { flex: 1; min-width: 0; }
+.results {
+    background: transparent !important; border: none !important;
+    box-shadow: none !important; width: 100% !important;
+}
+#result_list { width: 100% !important; }
+
+/* ── 筛选 ── */
+#changelist-filter {
+    background: var(--yla-bg-card); border-left: 1px solid var(--yla-border);
+    padding: 1rem; width: 190px; flex-shrink: 0; transition: all 0.2s ease;
+}
+#changelist-filter.is-collapsed { display: none; }
+#changelist-filter h2 {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--yla-text-muted); margin-bottom: 0.5rem;
+}
+#changelist-filter .clear-filters {
+    display: block; margin: 0 0 0.7rem; padding: 0.28rem 0.55rem;
+    font-size: 0.7rem; font-weight: 600; color: #ef4444;
+    border: 1px solid #fecaca; border-radius: var(--yla-radius-sm);
+    text-align: center; text-decoration: none; background: #fef2f2;
+}
+#changelist-filter .clear-filters:hover { background: #fee2e2; color: #dc2626; }
+.theme-dark #changelist-filter .clear-filters {
+    background: #450a0a; border-color: #7f1d1d; color: #fca5a5;
+}
+.theme-dark #changelist-filter .clear-filters:hover { background: #7f1d1d; color: #fecaca; }
+#changelist-filter h3 { font-size: 0.72rem; font-weight: 600; color: var(--yla-text-primary); margin: 0.65rem 0 0.3rem; }
+#changelist-filter ul { margin: 0; padding: 0; list-style: none; }
+#changelist-filter li { padding: 0.08rem 0; }
+#changelist-filter a {
+    font-size: 0.75rem; color: var(--yla-text-secondary); text-decoration: none;
+    display: block; padding: 0.18rem 0.4rem; border-radius: 4px;
+}
+#changelist-filter a:hover,
+#changelist-filter li.selected a {
+    background: var(--yla-bg-hover); color: var(--yla-text-primary); font-weight: 600;
+}
+
+/* ── 分页 ── */
+.paginator {
+    display: flex !important; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5rem; padding: 0.7rem 1.2rem !important;
+    border-top: 1px solid var(--yla-border) !important;
+    background: var(--yla-bg-hover) !important;
+    font-size: 0.78rem !important; color: var(--yla-text-muted) !important;
+    line-height: 1.5 !important;
+}
+.paginator-controls { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+.paginator a,
+.paginator .this-page {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.3rem 0.6rem; border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-sm); background: var(--yla-bg-card);
+    color: var(--yla-text-secondary); text-decoration: none;
+    font-size: 0.78rem; font-weight: 600; min-width: 30px; transition: all 0.12s;
+}
+.paginator a:hover {
+    background: var(--yla-text-primary); color: var(--yla-bg-card);
+    border-color: var(--yla-text-primary);
+}
+.paginator .this-page {
+    background: var(--yla-text-primary); color: var(--yla-bg-card);
+    border-color: var(--yla-text-primary); font-weight: 700;
+}
+.paginator-prev, .paginator-next { gap: 0.3rem; white-space: nowrap; }
+.paginator-prev.disabled, .paginator-next.disabled {
+    opacity: 0.35; pointer-events: none; cursor: default;
+    padding: 0.3rem 0.6rem; font-size: 0.78rem;
+}
+.paginator-pages { display: flex; align-items: center; gap: 0.15rem; margin: 0 0.3rem; }
+.paginator-info { display: flex; align-items: center; gap: 0.75rem; font-size: 0.78rem; white-space: nowrap; }
+.paginator-per-page {
+    background: var(--yla-bg-input); border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-sm); padding: 0.3rem 0.5rem;
+    color: var(--yla-text-primary); font-size: 0.75rem; cursor: pointer;
+}
+
+/* ── 导出按钮 ── */
+.export-btns { display: inline-flex; gap: 0.3rem; margin-left: 0.5rem; }
+.export-btn {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    padding: 0.35rem 0.65rem; border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-sm); background: var(--yla-bg-card);
+    color: var(--yla-text-secondary); font-size: 0.72rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap; transition: all 0.12s;
+}
+.export-btn:hover {
+    border-color: var(--yla-text-primary); color: var(--yla-text-primary);
+    background: var(--yla-bg-hover);
+}
+
+@media (max-width: 768px) {
+    #toolbar { flex-direction: column; align-items: stretch; }
+    #toolbar form#changelist-search { max-width: none; }
+    .cl-body { flex-direction: column; }
+    #changelist-filter { width: auto; border-left: none; border-top: 1px solid var(--yla-border); }
+}

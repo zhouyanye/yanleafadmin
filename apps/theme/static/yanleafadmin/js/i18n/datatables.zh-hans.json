@@ -1,0 +1,29 @@
+{
+    "processing":   "处理中...",
+    "lengthMenu":   "显示 _MENU_ 条结果",
+    "zeroRecords":  "没有匹配结果",
+    "info":         "显示第 _START_ 至 _END_ 条结果，共 _TOTAL_ 条",
+    "infoEmpty":    "显示第 0 至 0 条结果，共 0 条",
+    "infoFiltered": "(从 _MAX_ 条结果中过滤)",
+    "search":       "搜索：",
+    "paginate": {
+        "first":    "首页",
+        "previous": "上页",
+        "next":     "下页",
+        "last":     "末页"
+    },
+    "loadingRecords": "载入中...",
+    "emptyTable":     "表中数据为空",
+    "buttons": {
+        "copy": "复制",
+        "copyTitle": "已复制到剪贴板",
+        "copySuccess": {
+            "1": "已复制 1 行到剪贴板",
+            "_": "已复制 %d 行到剪贴板"
+        },
+        "excel": "导出 Excel",
+        "csv": "导出 CSV",
+        "print": "打印",
+        "colvis": "列可见性"
+    }
+}

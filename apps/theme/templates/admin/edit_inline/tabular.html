@@ -1,0 +1,121 @@
+{% load i18n static %}
+<div class="inline-group yla-inline" id="{{ inline_admin_formset.formset.prefix }}-group">
+    <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
+
+        {{ inline_admin_formset.formset.management_form }}
+
+        <div class="module">
+            <h2>
+                {% if inline_admin_formset.formset.instance.pk %}
+                    {{ inline_admin_formset.opts.verbose_name_plural|capfirst }}
+                {% else %}
+                    {% translate inline_admin_formset.opts.verbose_name_plural|capfirst %}
+                {% endif %}
+            </h2>
+
+            {{ inline_admin_formset.formset.non_form_errors }}
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            {% for field in inline_admin_formset.fields %}
+                            <th{% if field.is_hidden %} class="is-hidden"{% endif %}>
+                                {{ field.label|capfirst }}
+                                {% if field.help_text %}
+                                <span class="has-text-grey-light is-size-7 ml-1">({{ field.help_text }})</span>
+                                {% endif %}
+                            </th>
+                            {% endfor %}
+                            {% if inline_admin_formset.formset.can_delete and inline_admin_formset.has_delete_permission %}
+                            <th class="has-text-right" style="width: 60px;">
+                                <span class="is-size-7 has-text-weight-bold">{% translate '删除' %}</span>
+                            </th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for inline_admin_form in inline_admin_formset %}
+                        {% if inline_admin_form.form.non_field_errors %}
+                        <tr>
+                            <td colspan="20">
+                                <div class="notification is-danger is-light is-size-7 p-2 mb-0">
+                                {{ inline_admin_form.form.non_field_errors }}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        <tr class="form-row
+                            {% if inline_admin_form.original or inline_admin_form.show_url %}has_original{% endif %}
+                            {% if forloop.last and inline_admin_formset.formset.forms|length > 1 %}empty-form{% endif %}"
+                            id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+
+                            <!-- 原始值隐藏列 -->
+                            <td class="original" style="display:none;">
+                                {% if inline_admin_form.original or inline_admin_form.show_url %}
+                                <p>
+                                    {% if inline_admin_form.original %}
+                                    {{ inline_admin_form.original }}
+                                    {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
+                                    <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}"
+                                       class="inlinechangelink">{% translate '修改' %}</a>
+                                    {% endif %}
+                                    {% endif %}
+                                </p>
+                                {% endif %}
+                                {% if inline_admin_form.needs_explicit_pk_field %}
+                                {{ inline_admin_form.pk_field.field }}
+                                {% endif %}
+                                {% if inline_admin_form.fk_field %}
+                                {{ inline_admin_form.fk_field.field }}
+                                {% endif %}
+                            </td>
+
+                            {% for fieldset in inline_admin_form %}
+                            {% for line in fieldset %}
+                            {% for field in line %}
+                            <td class="field-{{ field.field.name }}{% if field.field.is_hidden %} is-hidden{% endif %}">
+                                {% if field.is_readonly %}
+                                <p class="is-size-7">{{ field.contents }}</p>
+                                {% else %}
+                                {{ field.field }}
+                                <div class="yla-inline-errors">{{ field.field.errors }}</div>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                            {% endfor %}
+                            {% endfor %}
+
+                            {% if inline_admin_formset.formset.can_delete and inline_admin_formset.has_delete_permission %}
+                            <td class="delete has-text-right">
+                                {% if inline_admin_form.original %}
+                                <span class="inline-deletelink">
+                                    {{ inline_admin_form.deletion_field.field }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- "添加另一个" 链接 -->
+            {% if inline_admin_formset.formset.max_num != 1 %}
+            <div class="add-row px-4 pb-3">
+                <a href="#"><i class="fas fa-plus-circle"></i>&nbsp;
+                    {% blocktranslate with verbose_name=inline_admin_formset.opts.verbose_name|capfirst %}
+                    添加另一个 {{ verbose_name }}
+                    {% endblocktranslate %}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+{% if inline_admin_formset.formset.max_num == 1 %}{# 单行模式：隐藏添加按钮 #}{% endif %}

@@ -1,0 +1,24 @@
+/* ============================================================
+   YanLeafAdmin — 用户编辑页密码字段美化
+   ============================================================ */
+
+.pwd-display { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.pwd-display-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.35rem 0.75rem; border-radius: 20px;
+    background: #f0fdf4; border: 1px solid #bbf7d0;
+    color: #166534; font-size: 0.75rem; font-weight: 500;
+}
+.theme-dark .pwd-display-badge { background: #052e16; border-color: #166534; color: #86efac; }
+.pwd-display-link {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.35rem 0.85rem; border-radius: var(--yla-radius-sm);
+    background: var(--yla-text-primary); color: var(--yla-bg-card);
+    font-size: 0.78rem; font-weight: 600; text-decoration: none; transition: opacity 0.12s;
+}
+.pwd-display-link:hover { opacity: 0.85; }
+.back-link {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    color: var(--yla-text-muted); font-size: 0.8rem; text-decoration: none; transition: color 0.12s;
+}
+.back-link:hover { color: var(--yla-text-link); }

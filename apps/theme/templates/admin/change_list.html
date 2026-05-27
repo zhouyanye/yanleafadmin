@@ -1,0 +1,202 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls admin_list static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'yanleafadmin/css/change-list.css' %}">
+<link rel="stylesheet" href="{% static 'yanleafadmin/vendor/datatables/css/buttons.bulma.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+    {% if has_add_permission %}
+    <div style="margin-bottom:0.75rem;">
+        <a href="{% url cl.opts|admin_urlname:'add' %}{% if is_popup %}?_popup=1{% endif %}" class="cl-add-btn">
+            <i class="fas fa-plus-circle"></i>
+            {% blocktranslate with name=cl.opts.verbose_name %}添加 {{ name }}{% endblocktranslate %}
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="cl-card">
+
+        {% if cl.search_fields %}
+        <div id="toolbar">
+            {% block search %}{% search_form cl %}{% endblock %}
+            <div class="cl-toolbar-spacer" style="flex:1;"></div>
+            {% if cl.has_filters %}
+            <button type="button" class="cl-filter-btn" id="cl-filter-toggle">
+                <i class="fas fa-filter"></i> {% translate '筛选' %}
+            </button>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="cl-body">
+            <div class="cl-main">
+
+                <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
+                    {% csrf_token %}
+                    {% if cl.formset %}<div>{{ cl.formset.management_form }}</div>{% endif %}
+
+                    {% if action_form and actions_on_top and cl.show_admin_actions %}
+                    <div class="actions">{% admin_actions %}</div>
+                    {% endif %}
+
+                    {% if cl.result_count == 0 %}
+                    <div class="cl-empty">
+                        <div class="cl-empty-icon"><i class="fas fa-inbox"></i></div>
+                        <div class="cl-empty-text">{% translate '没有匹配的数据' %}</div>
+                        <div class="cl-empty-hint">
+                            {% if cl.query %}
+                            {% translate '未找到与"' %}<strong>{{ cl.query }}</strong>{% translate '"匹配的结果，请尝试其他关键字。' %}
+                            {% else %}
+                            {% translate '暂无数据，点击上方按钮开始添加。' %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="results">
+                        {% block result_list %}{% result_list cl %}{% endblock %}
+                    </div>
+                    {% endif %}
+
+                    {% if action_form and actions_on_bottom and cl.show_admin_actions %}
+                    <div class="actions" style="border-top:1px solid var(--yla-border);border-bottom:none;">{% admin_actions %}</div>
+                    {% endif %}
+                </form>
+
+                {% if cl.result_count > 0 %}
+                {% block pagination %}{% pagination cl %}{% endblock %}
+                {% endif %}
+
+            </div>
+
+            {% if cl.has_filters %}
+            <div id="changelist-filter">
+                <h2><i class="fas fa-filter"></i> {% translate '筛选' %}</h2>
+                {% if request.META.QUERY_STRING %}
+                <a href="?" class="clear-filters"><i class="fas fa-times-circle"></i> {% translate '清除全部筛选' %}</a>
+                {% endif %}
+                {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<!-- DataTables -->
+<script src="{% static 'yanleafadmin/vendor/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'yanleafadmin/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'yanleafadmin/vendor/datatables/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'yanleafadmin/vendor/datatables/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'yanleafadmin/vendor/datatables/js/buttons.print.min.js' %}"></script>
+
+<script>
+(function($) {
+
+    /* ── 全选 ── */
+    $('#changelist-form').on('change', '#action-toggle', function() {
+        $('#changelist-form .action-select').prop('checked', this.checked);
+    });
+
+    /* ── 计数 ── */
+    function updateCount() {
+        var $boxes = $('#changelist-form .action-select');
+        var checked = $boxes.filter(':checked').length;
+        if (checked !== updateCount._last) {
+            updateCount._last = checked;
+            $('#changelist-form .action-counter').text(checked > 0 ? '已选 ' + checked + ' 条' : '');
+            $('#action-toggle').prop('checked', $boxes.length > 0 && checked === $boxes.length);
+        }
+    }
+    updateCount._last = -1;
+    $('#changelist-form').on('change click', '.action-select', function() { setTimeout(updateCount, 10); });
+    setInterval(updateCount, 600);
+    $(updateCount);
+
+    /* ── 每页条数 ── */
+    $(document).on('change', '#paginator-per-page', function() {
+        var n = this.value;
+        var url = new URL(window.location.href);
+        if (n === '0') {
+            url.searchParams.set('all', '1');
+            url.searchParams.delete('per_page');
+        } else {
+            url.searchParams.set('per_page', n);
+            url.searchParams.delete('all');
+        }
+        url.searchParams.delete('p');
+        window.location.href = url.toString();
+    });
+
+    /* ── 筛选折叠 ── */
+    var $fBtn = $('#cl-filter-toggle'), $f = $('#changelist-filter');
+    if ($fBtn.length && $f.length) {
+        $fBtn.on('click', function() {
+            var c = !$f.hasClass('is-collapsed');
+            $f.toggleClass('is-collapsed', c);
+            $fBtn.toggleClass('is-active', c);
+            localStorage.setItem('yla-filter-collapsed', c ? 'true' : 'false');
+        });
+        if (localStorage.getItem('yla-filter-collapsed') === 'true') {
+            $f.addClass('is-collapsed'); $fBtn.addClass('is-active');
+        }
+    }
+
+    /* ── DataTables 导出（按钮注入到 Django 动作栏）─── */
+    if ($('#result_list').length) {
+        var langCode = window.YLA.lang || 'zh-hans';
+        var dt = $('#result_list').DataTable({
+            dom: 'Bt',                     // 按钮 + 表格
+            paging: false,                 // Django 服务端分页
+            searching: false,              // Django 服务端搜索
+            info: false,                   // Django 显示计数
+            ordering: false,               // Django 服务端排序
+            buttons: [
+                { extend: 'copy',  text: '复制' },
+                { extend: 'excel', text: 'Excel' },
+                { extend: 'csv',   text: 'CSV' },
+                { extend: 'print', text: '打印' }
+            ],
+            language: {
+                url: '/static/yanleafadmin/js/i18n/datatables.' + langCode + '.json'
+            }
+        });
+
+        // 把导出按钮移到有实际内容的动作栏（跳过空 div）
+        var $btnContainer = $(dt.buttons().container());
+        if ($btnContainer.length) {
+            // 找到有 children 的 actions div（真实动作栏）
+            var $realActions = null;
+            $('#changelist-form .actions').each(function() {
+                if ($(this).children().length > 0) {
+                    $realActions = $(this);
+                    return false; // break
+                }
+            });
+            if ($realActions && $realActions.length) {
+                $btnContainer.appendTo($realActions)
+                    .find('.dt-button')
+                    .addClass('yla-export-btn');
+            }
+        }
+
+        // 现在清理空动作栏
+        $('#changelist-form .actions').each(function() {
+            if ($(this).children().length === 0) {
+                $(this).hide();
+            }
+        });
+    }
+
+})(jQuery);
+</script>
+{% endblock %}

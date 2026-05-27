@@ -1,0 +1,221 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block title %}{% if errors %}{% translate "Error:" %} {% endif %}{{ block.super }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'yanleafadmin/css/change-form.css' %}">
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="yanleaf-breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate '首页' %}</a>
+    <span class="separator">&rsaquo;</span>
+    <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+    <span class="separator">&rsaquo;</span>
+    {% if has_view_permission %}
+    <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+    {% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+    <span class="separator">&rsaquo;</span>
+    <span>{% if add %}{% blocktranslate with name=opts.verbose_name %}添加 {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}</span>
+</nav>
+{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block object-tools %}
+{% if change and not is_popup %}
+<ul class="object-tools">
+    {% block object-tools-items %}{% change_form_object_tools %}{% endblock %}
+</ul>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>
+    {% csrf_token %}{% block form_top %}{% endblock %}
+
+    {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+    {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+
+    {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+
+    {% if errors %}
+    <p class="errornote">
+        <i class="fas fa-exclamation-triangle"></i>&nbsp;
+        {% blocktranslate count counter=errors|length %}请修正以下错误。{% plural %}请修正以下错误。{% endblocktranslate %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+    {% endif %}
+
+    {% block field_sets %}
+    {% for fieldset in adminform %}
+    <fieldset class="module">
+        {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+        {% for line in fieldset %}
+        <div class="form-row{% if line.errors %} has-errors{% endif %}{% for field in line %} field-{{ field.field.name }}{% endfor %}">
+            <div class="form-label-side">
+                {% for field in line %}
+                <label for="{{ field.field.auto_id }}" class="{% if field.field.field.required %}required{% endif %}">
+                    {{ field.field.label }}
+                </label>
+                {% endfor %}
+            </div>
+            <div class="form-field-box">
+                {% for field in line %}
+                {% if field.is_readonly %}
+                <div class="readonly">{{ field.contents }}</div>
+                {% else %}
+                {{ field.field }}
+                {% endif %}
+                {{ field.field.errors }}
+                {% if field.field.help_text and not field.is_readonly %}
+                <div class="form-help-text">{{ field.field.help_text }}</div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </fieldset>
+    {% endfor %}
+    {% endblock %}
+
+    {% block after_field_sets %}{% endblock %}
+
+    {% block inline_field_sets %}
+    {% for inline_admin_formset in inline_admin_formsets %}
+        {% include inline_admin_formset.opts.template %}
+    {% endfor %}
+    {% endblock %}
+
+    {% block after_related_objects %}{% endblock %}
+
+    {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+
+    {% block admin_change_form_document_ready %}
+    <script id="django-admin-form-add-constants"
+            src="{% static 'admin/js/change_form.js' %}"
+            {% if adminform and add %}data-model-name="{{ opts.model_name }}"{% endif %}
+            async>
+    </script>
+    {% endblock %}
+
+    {% prepopulated_fields_js %}
+
+    </form>
+
+</div>
+
+<script src="{% static 'yanleafadmin/vendor/bulma-calendar/bulma-calendar.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'yanleafadmin/vendor/bulma-calendar/bulma-calendar.min.css' %}">
+<link rel="stylesheet" href="{% static 'yanleafadmin/vendor/select2/css/select2.min.css' %}">
+<script src="{% static 'yanleafadmin/vendor/select2/js/select2.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'yanleafadmin/vendor/dropzone/dropzone.css' %}">
+<script src="{% static 'yanleafadmin/vendor/dropzone/dropzone-min.js' %}"></script>
+
+<script>
+window.DJANGO_CURRENT_LANGUAGE = '{{ request.LANGUAGE_CODE|default:"zh-hans" }}';
+</script>
+<script>
+(function() {
+    var Cal = typeof bulmaCalendar !== 'undefined' ? bulmaCalendar : (typeof BulmaCalendar !== 'undefined' ? BulmaCalendar : null);
+
+    if (Cal && Cal.langs) {
+        Cal.langs['zh'] = {
+            months: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+            monthsShort: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+            weekdays: ['日','一','二','三','四','五','六'],
+            today: '今天', clear: '清除', cancel: '取消', validate: '确定', now: '现在'
+        };
+    }
+
+    var i18nDict = {
+        'zh': {
+            clearLabel: '清除', todayLabel: '今天', cancelLabel: '取消', validateLabel: '确定',
+            weekDays: ['日','一','二','三','四','五','六'],
+            months: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+            monthsShort: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+        },
+        'en': {
+            clearLabel: 'Clear', todayLabel: 'Today', cancelLabel: 'Cancel', validateLabel: 'Select',
+            weekDays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+            months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+            monthsShort: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+        }
+    };
+
+    var currentLang = (window.DJANGO_CURRENT_LANGUAGE || navigator.language || 'en').toLowerCase();
+    var activeLangKey = (currentLang.indexOf('zh') !== -1) ? 'zh' : 'en';
+    var locale = i18nDict[activeLangKey];
+
+    function wrapInput(el, iconClass) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative;display:inline-block;max-width:200px;';
+        el.parentNode.insertBefore(wrap, el);
+        wrap.appendChild(el);
+        el.type = 'text';
+        el.style.cssText = 'width:100%;padding-right:2.2rem;';
+        var icon = document.createElement('span');
+        icon.className = 'fas ' + iconClass;
+        icon.style.cssText = 'position:absolute;right:0.7rem;top:50%;transform:translateY(-50%);color:var(--yla-text-muted);pointer-events:none;font-size:0.9rem;';
+        wrap.appendChild(icon);
+    }
+
+    document.querySelectorAll('input.vDateField').forEach(function(el) {
+        if (Cal) {
+            wrapInput(el, 'fa-calendar-alt');
+            new Cal(el, {
+                type: 'date', lang: activeLangKey,
+                dateFormat: 'yyyy-MM-dd', displayMode: 'dialog',
+                color: 'dark', weekStart: 1,
+                showHeader: true, showClearButton: true,
+                startDate: el.value ? new Date(el.value) : undefined,
+                clearLabel: locale.clearLabel, todayLabel: locale.todayLabel,
+                cancelLabel: locale.cancelLabel, weekDays: locale.weekDays,
+                months: locale.months, monthsShort: locale.monthsShort
+            });
+        } else {
+            el.type = 'date';
+            if (el.value) el.value = el.value.slice(0, 10);
+        }
+    });
+
+    document.querySelectorAll('input.vTimeField').forEach(function(el) {
+        if (Cal) {
+            wrapInput(el, 'fa-clock');
+            new Cal(el, {
+                type: 'time', lang: activeLangKey,
+                timeFormat: 'HH:mm', displayMode: 'dialog',
+                color: 'dark', minuteInterval: 1, showHeader: true,
+                validateLabel: locale.validateLabel, clearLabel: locale.clearLabel,
+                cancelLabel: locale.cancelLabel
+            });
+        } else {
+            el.type = 'time'; el.style.maxWidth = '130px';
+        }
+    });
+
+    var form = document.getElementById('user_form') || document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            document.querySelectorAll('input.vTimeField').forEach(function(el) {
+                if (el.value && el.value.length === 5) { el.value += ':00'; }
+            });
+        });
+    }
+})();
+</script>
+
+<script src="{% static 'yanleafadmin/js/password-check.js' %}"></script>
+{% endblock %}

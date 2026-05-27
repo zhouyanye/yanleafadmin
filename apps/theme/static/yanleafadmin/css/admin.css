@@ -1,0 +1,1653 @@
+/* ============================================================
+   YanLeafAdmin — 白色极简现代后台主题体系
+   基于 Bulma 1.0 + 自定义 CSS 变量实现明暗双模
+   ============================================================ */
+
+/* Bulma is now loaded via <link> tag in base.html */
+
+/* ----------------------------------------------------------
+   1. CSS 自定义属性 — 浅色模式 (默认)
+   ---------------------------------------------------------- */
+:root {
+    --yla-bg-body: #f4f6f9;
+    --yla-bg-sidebar: #ffffff;
+    --yla-bg-card: #ffffff;
+    --yla-bg-input: #ffffff;
+    --yla-bg-hover: #f1f5f9;
+    --yla-bg-active: #e8edf3;
+
+    --yla-text-primary: #0f172a;
+    --yla-text-secondary: #64748b;
+    --yla-text-muted: #94a3b8;
+    --yla-text-link: #3b82f6;
+
+    --yla-border: #e2e8f0;
+    --yla-border-light: #f1f5f9;
+
+    --yla-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+    --yla-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04);
+    --yla-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+
+    --yla-radius-sm: 6px;
+    --yla-radius-md: 10px;
+    --yla-radius-lg: 16px;
+
+    --yla-sidebar-width: 250px;
+    --yla-topbar-height: 60px;
+
+    --yla-transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ----------------------------------------------------------
+   2. 深色模式变量覆盖
+   ---------------------------------------------------------- */
+.theme-dark {
+    --yla-bg-body: #0f172a;
+    --yla-bg-sidebar: #1e293b;
+    --yla-bg-card: #1e293b;
+    --yla-bg-input: #1e293b;
+    --yla-bg-hover: #334155;
+    --yla-bg-active: #3b4455;
+
+    --yla-text-primary: #f1f5f9;
+    --yla-text-secondary: #94a3b8;
+    --yla-text-muted: #64748b;
+    --yla-text-link: #60a5fa;
+
+    --yla-border: #334155;
+    --yla-border-light: #1e293b;
+
+    --yla-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --yla-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --yla-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* 平滑过渡：切换模式时颜色渐变 */
+body, .box, .input, .button, .table, .yanleaf-sidebar, .yanleaf-topbar,
+.yanleaf-content, .yanleaf-topbar, .dropdown-menu, .dropdown-content {
+    transition: background-color var(--yla-transition),
+                color var(--yla-transition),
+                border-color var(--yla-transition),
+                box-shadow var(--yla-transition);
+}
+
+/* ----------------------------------------------------------
+   3. 全局 Reset
+   ---------------------------------------------------------- */
+html {
+    font-size: 15px;
+}
+
+body {
+    background: var(--yla-bg-body);
+    color: var(--yla-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--yla-text-link);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* ----------------------------------------------------------
+   4. 核心布局：侧边栏 + 主区域
+   ---------------------------------------------------------- */
+.yanleaf-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- 侧边栏 --- */
+.yanleaf-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--yla-sidebar-width);
+    background: var(--yla-bg-sidebar);
+    border-right: 1px solid var(--yla-border);
+    display: flex;
+    flex-direction: column;
+    z-index: 40;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-brand {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--yla-border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    height: var(--yla-topbar-height);
+}
+
+.sidebar-brand .brand-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--yla-text-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--yla-bg-sidebar);
+    font-size: 1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.sidebar-brand .brand-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--yla-text-primary);
+    letter-spacing: -0.5px;
+}
+
+.sidebar-brand .brand-sub {
+    font-weight: 300;
+    color: var(--yla-text-muted);
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 1rem 0;
+}
+
+/* 侧边栏分组 */
+.sidebar-section {
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-section-title {
+    padding: 0.5rem 1.5rem 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--yla-text-muted);
+}
+
+.sidebar-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1.5rem;
+    color: var(--yla-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.sidebar-menu li a:hover {
+    background: var(--yla-bg-hover);
+    color: var(--yla-text-primary);
+    border-left-color: var(--yla-text-muted);
+}
+
+.sidebar-menu li a.active {
+    background: var(--yla-bg-active);
+    color: var(--yla-text-primary);
+    border-left-color: var(--yla-text-primary);
+    font-weight: 600;
+}
+
+.sidebar-menu li a .menu-icon {
+    width: 18px;
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.6;
+}
+
+/* --- 主区域 --- */
+.yanleaf-main {
+    flex: 1;
+    margin-left: var(--yla-sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- 顶部栏 --- */
+.yanleaf-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    height: var(--yla-topbar-height);
+    background: var(--yla-bg-sidebar);
+    border-bottom: 1px solid var(--yla-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.75rem;
+    gap: 1rem;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
+
+/* 移动端菜单按钮 */
+.sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.35rem;
+    border-radius: var(--yla-radius-sm);
+    color: var(--yla-text-secondary);
+    font-size: 1.25rem;
+    line-height: 1;
+}
+.sidebar-toggle:hover {
+    background: var(--yla-bg-hover);
+    color: var(--yla-text-primary);
+}
+
+/* 面包屑 */
+.yanleaf-breadcrumbs {
+    font-size: 0.8rem;
+    color: var(--yla-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.yanleaf-breadcrumbs a {
+    color: var(--yla-text-muted);
+}
+.yanleaf-breadcrumbs a:hover {
+    color: var(--yla-text-link);
+}
+.yanleaf-breadcrumbs .separator {
+    margin: 0 0.35rem;
+    color: var(--yla-text-muted);
+}
+
+/* 图标按钮 (暗黑模式 / 语言切换等) */
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--yla-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--yla-text-secondary);
+    font-size: 1.1rem;
+    transition: all 0.15s ease;
+    position: relative;
+}
+.icon-btn:hover {
+    background: var(--yla-bg-hover);
+    color: var(--yla-text-primary);
+}
+
+/* 用户下拉菜单 */
+.user-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--yla-radius-sm);
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--yla-text-secondary);
+    font-weight: 500;
+    border: none;
+    background: none;
+}
+.user-dropdown-toggle:hover {
+    background: var(--yla-bg-hover);
+    color: var(--yla-text-primary);
+}
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--yla-text-primary);
+    color: var(--yla-bg-sidebar);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* ----------------------------------------------------------
+   5. 内容区
+   ---------------------------------------------------------- */
+.yanleaf-content {
+    flex: 1;
+    padding: 1.75rem;
+}
+
+/* 页面标题区 */
+.page-header {
+    margin-bottom: 1.5rem;
+}
+.page-header .page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--yla-text-primary);
+    letter-spacing: -0.5px;
+}
+.page-header .page-subtitle {
+    font-size: 0.85rem;
+    color: var(--yla-text-muted);
+    margin-top: 0.25rem;
+}
+
+/* ----------------------------------------------------------
+   6. Bulma 组件覆盖
+   ---------------------------------------------------------- */
+
+/* Box 卡片 */
+.box {
+    background: var(--yla-bg-card) !important;
+    border-radius: var(--yla-radius-lg) !important;
+    box-shadow: var(--yla-shadow-md) !important;
+    border: 1px solid var(--yla-border) !important;
+    color: var(--yla-text-primary) !important;
+}
+
+/* 统计卡片 */
+.dashboard-stat-card {
+    background: var(--yla-bg-card) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-lg) !important;
+    box-shadow: var(--yla-shadow-md) !important;
+    transition: all 0.3s ease;
+}
+.dashboard-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--yla-shadow-lg) !important;
+    border-color: var(--yla-text-muted) !important;
+}
+
+/* 标题 */
+.title, .subtitle {
+    color: var(--yla-text-primary) !important;
+}
+.heading {
+    color: var(--yla-text-muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+/* 输入框 */
+.input, .textarea, .select select {
+    background: var(--yla-bg-input) !important;
+    border-color: var(--yla-border) !important;
+    color: var(--yla-text-primary) !important;
+    border-radius: var(--yla-radius-sm) !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease;
+}
+.input:focus, .textarea:focus, .select select:focus {
+    border-color: var(--yla-text-primary) !important;
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.06) !important;
+}
+.input::placeholder, .textarea::placeholder {
+    color: var(--yla-text-muted) !important;
+}
+
+/* 表格 */
+.table {
+    background: var(--yla-bg-card) !important;
+    color: var(--yla-text-primary) !important;
+    border-radius: var(--yla-radius-md) !important;
+    overflow: hidden;
+}
+.table th {
+    color: var(--yla-text-secondary) !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--yla-border) !important;
+    padding: 0.75rem 1rem !important;
+    background: transparent !important;
+}
+.table td {
+    border-bottom: 1px solid var(--yla-border-light) !important;
+    padding: 0.7rem 1rem !important;
+    vertical-align: middle !important;
+}
+.table tr:hover td {
+    background: var(--yla-bg-hover) !important;
+}
+
+/* 结果列表增强（Django admin change_list） */
+#result_list {
+    border-radius: 0 !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+}
+
+#result_list thead th {
+    white-space: nowrap;
+    padding: 0.7rem 0.75rem !important;
+}
+#result_list tbody td {
+    padding: 0.55rem 0.75rem !important;
+    vertical-align: middle;
+}
+
+#result_list thead th.action-checkbox-column {
+    width: 40px;
+    text-align: center;
+    padding: 0.7rem 0.5rem !important;
+}
+
+#result_list tbody td {
+    font-size: 0.84rem;
+    padding: 0.6rem 0.75rem !important;
+}
+
+#result_list tbody td.action-checkbox {
+    text-align: center;
+}
+
+#result_list tbody td.action-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--yla-text-primary);
+    cursor: pointer;
+}
+
+#result_list tbody tr.selected td {
+    background: rgba(59, 130, 246, 0.04) !important;
+}
+.theme-dark #result_list tbody tr.selected td {
+    background: rgba(96, 165, 250, 0.08) !important;
+}
+
+/* 排序指示器（Django admin 5.2 类名） */
+#result_list thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+#result_list thead th.sortable .text a {
+    color: var(--yla-text-primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+#result_list thead th.sortable .text a:hover {
+    color: var(--yla-text-link);
+}
+
+/* 默认排序图标 */
+#result_list thead th.sortable .text a::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 10px;
+    background: currentColor;
+    opacity: 0.25;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Cpath d='M8 0l4 5H4l4-5zM8 10L4 5h8l-4 5z' fill='%23000'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Cpath d='M8 0l4 5H4l4-5zM8 10L4 5h8l-4 5z' fill='%23000'/%3E%3C/svg%3E") center / contain no-repeat;
+    transition: opacity 0.15s;
+}
+
+/* 升序 ▲ */
+#result_list thead th.ascending .text a::after {
+    opacity: 1;
+    width: 12px;
+    height: 12px;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 0l6 8H0l6-8z' fill='%23000'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 0l6 8H0l6-8z' fill='%23000'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* 降序 ▼ */
+#result_list thead th.descending .text a::after {
+    opacity: 1;
+    width: 12px;
+    height: 12px;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 12L0 4h12L6 12z' fill='%23000'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 12L0 4h12L6 12z' fill='%23000'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* 排序列头微高亮 */
+#result_list thead th.sorted {
+    background: rgba(59, 130, 246, 0.04);
+}
+.theme-dark #result_list thead th.sorted {
+    background: rgba(96, 165, 250, 0.08);
+}
+
+/* 列链接 */
+#result_list tbody td a {
+    color: var(--yla-text-link);
+    font-weight: 500;
+    text-decoration: none;
+}
+#result_list tbody td a:hover {
+    text-decoration: underline;
+}
+
+/* 通知 */
+.notification {
+    border-radius: var(--yla-radius-md) !important;
+    border: none !important;
+}
+
+/* 标签 */
+.tag {
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+}
+
+/* 按钮 */
+.button {
+    border-radius: var(--yla-radius-sm) !important;
+    font-weight: 600 !important;
+    transition: all 0.15s ease;
+}
+.button.is-dark {
+    background: var(--yla-text-primary) !important;
+}
+.theme-dark .button.is-dark {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+/* 下拉菜单 */
+.dropdown-menu {
+    background: var(--yla-bg-card) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-md) !important;
+    box-shadow: var(--yla-shadow-lg) !important;
+    overflow: hidden;
+}
+.dropdown-content {
+    background: var(--yla-bg-card) !important;
+}
+.dropdown-item {
+    color: var(--yla-text-primary) !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+}
+.dropdown-item:hover {
+    background: var(--yla-bg-hover) !important;
+}
+.dropdown-divider {
+    background: var(--yla-border) !important;
+}
+
+/* 模态框 */
+.modal-card {
+    border-radius: var(--yla-radius-lg) !important;
+}
+.modal-card-head {
+    background: var(--yla-bg-card) !important;
+    border-bottom: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-lg) var(--yla-radius-lg) 0 0 !important;
+}
+.modal-card-title {
+    color: var(--yla-text-primary) !important;
+}
+.modal-card-body {
+    background: var(--yla-bg-card) !important;
+    color: var(--yla-text-primary) !important;
+}
+.modal-card-foot {
+    background: var(--yla-bg-card) !important;
+    border-top: 1px solid var(--yla-border) !important;
+    border-radius: 0 0 var(--yla-radius-lg) var(--yla-radius-lg) !important;
+}
+
+/* 分页 */
+.pagination-link,
+.pagination-previous,
+.pagination-next {
+    background: var(--yla-bg-card) !important;
+    border-color: var(--yla-border) !important;
+    color: var(--yla-text-primary) !important;
+}
+.pagination-link.is-current {
+    background: var(--yla-text-primary) !important;
+    border-color: var(--yla-text-primary) !important;
+    color: var(--yla-bg-card) !important;
+}
+
+/* ----------------------------------------------------------
+   7. 组件覆盖：DataTables
+   ---------------------------------------------------------- */
+.dataTables_wrapper {
+    font-size: 0.875rem;
+    width: 100%;
+}
+/* 隐藏 DataTables 的搜索/分页/信息栏（由 Django 处理） */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    display: none !important;
+}
+.dataTables_wrapper .dataTables_length select {
+    background: var(--yla-bg-input) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-sm) !important;
+    color: var(--yla-text-primary) !important;
+    padding: 0.3rem 2rem 0.3rem 0.5rem !important;
+}
+.dataTables_wrapper .dataTables_filter input {
+    background: var(--yla-bg-input) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-sm) !important;
+    color: var(--yla-text-primary) !important;
+    padding: 0.4rem 0.75rem !important;
+    font-size: 0.85rem;
+}
+.dataTables_wrapper .dataTables_filter input:focus {
+    border-color: var(--yla-text-primary) !important;
+    outline: none;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: var(--yla-radius-sm) !important;
+    padding: 0.35rem 0.7rem !important;
+    margin: 0 2px !important;
+    border: 1px solid var(--yla-border) !important;
+    background: var(--yla-bg-card) !important;
+    color: var(--yla-text-secondary) !important;
+    font-size: 0.8rem !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: var(--yla-bg-hover) !important;
+    color: var(--yla-text-primary) !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--yla-text-primary) !important;
+    color: var(--yla-bg-card) !important;
+    border-color: var(--yla-text-primary) !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.4;
+}
+.dataTables_wrapper .dataTables_info {
+    color: var(--yla-text-muted) !important;
+    font-size: 0.8rem;
+}
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+    background-position: center right 0.5rem !important;
+}
+
+/* DataTables 导出按钮（注入到 Django 动作栏） */
+.dt-buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.dt-buttons .dt-button,
+.yla-export-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    background: var(--yla-bg-card, #fff) !important;
+    border: 1px solid var(--yla-border, #dbdbdb) !important;
+    border-radius: 6px !important;
+    color: #555 !important;
+    padding: 4px 12px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    line-height: 1.4 !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+}
+.dt-buttons .dt-button:hover,
+.yla-export-btn:hover {
+    background: #f0f3ff !important;
+    color: #485fc7 !important;
+    border-color: #485fc7 !important;
+}
+/* 暗黑模式 */
+.theme-dark .dt-buttons .dt-button,
+.theme-dark .yla-export-btn {
+    background: #2a2a3a !important;
+    border-color: #444 !important;
+    color: #bbb !important;
+}
+.theme-dark .dt-buttons .dt-button:hover,
+.theme-dark .yla-export-btn:hover {
+    background: #363650 !important;
+    color: #8ea4ff !important;
+    border-color: #5a6ac0 !important;
+}
+
+/* ----------------------------------------------------------
+   8. 组件覆盖：Select2
+   ---------------------------------------------------------- */
+.select2-container--default .select2-selection {
+    background: var(--yla-bg-input) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-sm) !important;
+    min-height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--yla-text-primary) !important;
+    padding-left: 0.75rem !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+.select2-dropdown {
+    background: var(--yla-bg-card) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-sm) !important;
+    box-shadow: var(--yla-shadow-lg) !important;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    background: var(--yla-bg-input) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-sm) !important;
+    color: var(--yla-text-primary) !important;
+    outline: none;
+}
+.select2-container--default .select2-results__option {
+    padding: 0.5rem 0.75rem !important;
+    color: var(--yla-text-primary) !important;
+}
+.select2-container--default .select2-results__option--highlighted {
+    background: var(--yla-bg-hover) !important;
+    color: var(--yla-text-primary) !important;
+}
+
+/* ----------------------------------------------------------
+   9. 组件覆盖：SweetAlert2
+   ---------------------------------------------------------- */
+.yla-swal-popup {
+    border-radius: var(--yla-radius-md) !important;
+    box-shadow: var(--yla-shadow-lg) !important;
+    padding: 1.2rem !important;
+}
+.yla-swal-sm {
+    padding: 0.9rem !important;
+}
+.yla-swal-sm .swal2-title {
+    font-size: 0.95rem !important;
+}
+.yla-swal-sm .swal2-html-container {
+    font-size: 0.8rem !important;
+}
+.yla-swal-title {
+    color: var(--yla-text-primary) !important;
+    font-weight: 700 !important;
+}
+.yla-swal-confirm-btn {
+    border-radius: var(--yla-radius-sm) !important;
+    font-weight: 600 !important;
+    background: var(--yla-text-primary) !important;
+}
+.yla-swal-cancel-btn {
+    border-radius: var(--yla-radius-sm) !important;
+    font-weight: 600 !important;
+}
+
+/* Toast 弱提示容器 */
+.yla-toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.yla-toast {
+    background: var(--yla-bg-card);
+    color: var(--yla-text-primary);
+    border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-md);
+    box-shadow: var(--yla-shadow-md);
+    padding: 0.55rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    max-width: 340px;
+    animation: yla-toast-in 0.3s ease;
+}
+
+.yla-toast .toast-icon {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+.yla-toast.toast-success .toast-icon { color: #22c55e; }
+.yla-toast.toast-error   .toast-icon { color: #ef4444; }
+.yla-toast.toast-warning .toast-icon { color: #f59e0b; }
+.yla-toast.toast-info    .toast-icon { color: #3b82f6; }
+.yla-toast.yla-toast-out {
+    animation: yla-toast-out 0.25s ease forwards;
+}
+.yla-toast.toast-success { border-left: 3px solid #22c55e; }
+.yla-toast.toast-error   { border-left: 3px solid #ef4444; }
+.yla-toast.toast-warning { border-left: 3px solid #f59e0b; }
+.yla-toast.toast-info    { border-left: 3px solid #3b82f6; }
+
+@keyframes yla-toast-in {
+    from { opacity: 0; transform: translateX(80px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes yla-toast-out {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(80px); }
+}
+
+/* ----------------------------------------------------------
+   10. 文件上传：Dropzone
+   ---------------------------------------------------------- */
+.dropzone {
+    background: var(--yla-bg-card) !important;
+    border: 2px dashed var(--yla-border) !important;
+    border-radius: var(--yla-radius-lg) !important;
+    padding: 2rem !important;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--yla-text-secondary) !important;
+}
+.dropzone:hover {
+    border-color: var(--yla-text-primary) !important;
+    background: var(--yla-bg-hover) !important;
+}
+.dropzone .dz-message {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--yla-text-muted);
+}
+.dropzone .dz-preview {
+    margin: 0.75rem !important;
+}
+.dropzone .dz-preview .dz-image {
+    border-radius: var(--yla-radius-sm) !important;
+}
+
+/* ----------------------------------------------------------
+   11. AJAX 操作状态标签
+   ---------------------------------------------------------- */
+.status-toggle {
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    border: 1px solid var(--yla-border);
+    background: var(--yla-bg-card);
+    color: var(--yla-text-secondary);
+    transition: all 0.15s ease;
+    display: inline-block;
+}
+.status-toggle:hover {
+    border-color: var(--yla-text-primary);
+    color: var(--yla-text-primary);
+}
+.status-toggle.is-active {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+.status-toggle.is-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+/* ----------------------------------------------------------
+   12. 响应式
+   ---------------------------------------------------------- */
+@media (max-width: 1023px) {
+    .yanleaf-sidebar {
+        transform: translateX(-100%);
+    }
+    .yanleaf-sidebar.is-open {
+        transform: translateX(0);
+    }
+    .yanleaf-main {
+        margin-left: 0;
+    }
+    .sidebar-toggle {
+        display: block;
+    }
+    .yanleaf-content {
+        padding: 1.25rem;
+    }
+    .yanleaf-topbar {
+        padding: 0 1rem;
+    }
+}
+
+/* 侧边栏遮罩（移动端） */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 35;
+}
+.sidebar-overlay.is-visible {
+    display: block;
+}
+
+/* ----------------------------------------------------------
+   13. 登录页面（独立，不继承 base.html）
+   ---------------------------------------------------------- */
+.login-page {
+    background: var(--yla-bg-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+.login-page .box {
+    border-radius: var(--yla-radius-lg) !important;
+    box-shadow: var(--yla-shadow-md) !important;
+    border: 1px solid var(--yla-border) !important;
+    background: var(--yla-bg-card) !important;
+}
+
+.login-page .input {
+    border-radius: var(--yla-radius-sm) !important;
+    border-color: var(--yla-border) !important;
+    background: var(--yla-bg-input) !important;
+    color: var(--yla-text-primary) !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease;
+}
+.login-page .input:focus {
+    border-color: var(--yla-text-primary) !important;
+}
+.login-page .input::placeholder {
+    color: var(--yla-text-muted) !important;
+}
+
+.login-page .errorlist {
+    list-style: none;
+    margin: 0 0 10px 0;
+    padding: 0;
+}
+.login-page .errorlist li {
+    font-size: 0.75rem;
+    color: #f14668;
+    font-weight: 500;
+}
+
+.login-page .captcha-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.login-page .captcha-box img.captcha {
+    border-radius: var(--yla-radius-sm);
+    border: 1px solid var(--yla-border);
+    cursor: pointer;
+    height: 45px;
+}
+
+/* 登录页暗黑模式切换按钮 */
+.login-dark-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: var(--yla-bg-card);
+    border: 1px solid var(--yla-border);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--yla-text-secondary);
+    box-shadow: var(--yla-shadow-sm);
+    z-index: 10;
+    transition: all 0.15s ease;
+}
+.login-dark-toggle:hover {
+    color: var(--yla-text-primary);
+    box-shadow: var(--yla-shadow-md);
+}
+
+/* ----------------------------------------------------------
+   14. 穿梭框重写 (SelectFilter2 → Bulma 卡片)
+   ---------------------------------------------------------- */
+.yla-filter-widget {
+    margin: 0 !important;
+}
+
+.yla-filter-card {
+    overflow: hidden;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+}
+
+.yla-filter-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--yla-border);
+    background: var(--yla-bg-hover);
+}
+
+.yla-filter-card-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--yla-text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.yla-filter-count {
+    font-size: 0.7rem !important;
+}
+
+.yla-filter-search-box {
+    position: relative;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--yla-border);
+}
+
+.yla-filter-search-box .fa-search {
+    position: absolute;
+    left: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--yla-text-muted);
+    font-size: 0.75rem;
+}
+
+.yla-filter-search {
+    width: 100%;
+    padding: 0.4rem 0.6rem 0.4rem 1.6rem;
+    border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-sm);
+    background: var(--yla-bg-input);
+    color: var(--yla-text-primary);
+    font-size: 0.8rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+.yla-filter-search:focus {
+    border-color: var(--yla-text-primary);
+}
+.yla-filter-search::placeholder {
+    color: var(--yla-text-muted);
+}
+
+.yla-filter-list {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 300px;
+    padding: 0.35rem;
+}
+
+.yla-filter-item {
+    padding: 0.45rem 0.75rem;
+    margin: 1px 0;
+    border-radius: var(--yla-radius-sm);
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--yla-text-primary);
+    transition: all 0.12s ease;
+    user-select: none;
+    border: 1px solid transparent;
+}
+.yla-filter-item:hover {
+    background: var(--yla-bg-hover);
+}
+.yla-filter-item.is-highlighted {
+    background: var(--yla-bg-active);
+    border-color: var(--yla-text-primary);
+    font-weight: 600;
+}
+
+/* 中间按钮组 */
+.yla-filter-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0;
+}
+
+.yla-filter-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--yla-radius-sm);
+    border: 1px solid var(--yla-border);
+    background: var(--yla-bg-card);
+    color: var(--yla-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: all 0.15s ease;
+}
+.yla-filter-btn:hover {
+    background: var(--yla-text-primary);
+    color: var(--yla-bg-card);
+    border-color: var(--yla-text-primary);
+}
+.yla-filter-btn-all {
+    width: 36px;
+    height: 30px;
+    font-size: 0.7rem;
+}
+
+/* 深色模式 */
+.theme-dark .yla-filter-card {
+    border-color: var(--yla-border);
+    background: #1a2332;
+}
+.theme-dark .yla-filter-card-header {
+    background: #243044;
+    border-bottom-color: #334155;
+}
+.theme-dark .yla-filter-card-title {
+    color: #e2e8f0;
+}
+.theme-dark .yla-filter-count {
+    background: #334155;
+    color: #e2e8f0;
+}
+.theme-dark .yla-filter-search-box {
+    border-bottom-color: #334155;
+}
+.theme-dark .yla-filter-item {
+    color: #cbd5e1;
+}
+.theme-dark .yla-filter-item:hover {
+    background: #2d3a4d;
+    color: #f1f5f9;
+}
+.theme-dark .yla-filter-item.is-highlighted {
+    background: rgba(96, 165, 250, 0.22);
+    border-color: rgba(96, 165, 250, 0.5);
+    color: #f1f5f9;
+    font-weight: 600;
+}
+.theme-dark .yla-filter-search {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+}
+.theme-dark .yla-filter-search::placeholder {
+    color: #64748b;
+}
+.theme-dark .yla-filter-search:focus {
+    border-color: #60a5fa;
+}
+.theme-dark .yla-filter-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #94a3b8;
+}
+.theme-dark .yla-filter-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #f1f5f9;
+}
+
+/* 响应式：窄屏改为上下布局 */
+@media (max-width: 768px) {
+
+/* ----------------------------------------------------------
+   15. 内联表格重写 (TabularInline)
+   ---------------------------------------------------------- */
+
+/* 内联表格外层 Bulma box */
+.inline-group.yla-inline {
+    background: var(--yla-bg-card);
+    border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-lg);
+    box-shadow: var(--yla-shadow-md);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+/* 标题栏 */
+.inline-group.yla-inline .module h2 {
+    background: var(--yla-bg-hover) !important;
+    color: var(--yla-text-primary) !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    padding: 0.85rem 1.2rem !important;
+    border-bottom: 1px solid var(--yla-border) !important;
+    margin: 0 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.inline-group.yla-inline .module h2 .inline_label {
+    font-weight: 700;
+}
+
+/* 表格 */
+.inline-group.yla-inline table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inline-group.yla-inline thead th {
+    background: transparent !important;
+    color: var(--yla-text-secondary) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.65rem 0.85rem !important;
+    border-bottom: 2px solid var(--yla-border) !important;
+    border-top: none !important;
+    white-space: nowrap;
+}
+
+.inline-group.yla-inline tbody td {
+    padding: 0.55rem 0.85rem !important;
+    vertical-align: middle !important;
+    border-bottom: 1px solid var(--yla-border-light) !important;
+    font-size: 0.82rem;
+    color: var(--yla-text-primary);
+}
+
+/* 行交替色 */
+.inline-group.yla-inline tbody tr:nth-child(even) td {
+    background: rgba(0,0,0,0.01);
+}
+.theme-dark .inline-group.yla-inline tbody tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+}
+
+.inline-group.yla-inline tbody tr:hover td {
+    background: var(--yla-bg-hover) !important;
+}
+
+/* 原始 （hash） 列标识 */
+.inline-group.yla-inline td.original p {
+    display: none;
+}
+
+/* 内联删除链接 */
+.inline-group.yla-inline .inline-deletelink {
+    color: #ef4444 !important;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.inline-group.yla-inline .inline-deletelink:hover {
+    text-decoration: underline !important;
+}
+
+/* 新增行淡入动画 */
+.inline-group.yla-inline .dynamic-inline-add-row {
+    animation: yla-row-fadein 0.4s ease;
+}
+
+@keyframes yla-row-fadein {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* "添加另一个" 链接 */
+.inline-group.yla-inline .add-row a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--yla-text-link) !important;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.5rem 0;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+.inline-group.yla-inline .add-row a:hover {
+    color: var(--yla-text-primary) !important;
+}
+.inline-group.yla-inline .add-row a::before {
+    content: '+';
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* 内联表单项 */
+.inline-group.yla-inline input[type="text"],
+.inline-group.yla-inline input[type="number"],
+.inline-group.yla-inline input[type="email"],
+.inline-group.yla-inline textarea,
+.inline-group.yla-inline select {
+    background: var(--yla-bg-input) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-sm) !important;
+    color: var(--yla-text-primary) !important;
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.82rem;
+    transition: border-color 0.15s ease;
+    max-width: 100%;
+}
+.inline-group.yla-inline input:focus,
+.inline-group.yla-inline textarea:focus,
+.inline-group.yla-inline select:focus {
+    border-color: var(--yla-text-primary) !important;
+    outline: none;
+}
+
+/* 内联错误 */
+.inline-group.yla-inline .errorlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.7rem;
+    color: #ef4444;
+}
+
+/* ----------------------------------------------------------
+   16. 侧边栏署名
+   ---------------------------------------------------------- */
+.sidebar-credit {
+    padding: 0.8rem 1.25rem;
+    border-top: 1px solid var(--yla-border);
+    font-size: 0.68rem;
+    color: var(--yla-text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sidebar-credit-brand {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    opacity: 0.6;
+}
+
+.sidebar-credit-gh {
+    color: var(--yla-text-muted);
+    text-decoration: none;
+    opacity: 0.45;
+    transition: opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.sidebar-credit-gh:hover {
+    opacity: 0.85;
+    color: var(--yla-text-link);
+    text-decoration: none;
+}
+
+/* ----------------------------------------------------------
+   17. Popup 弹窗模式
+   ---------------------------------------------------------- */
+.yla-popup { background: var(--yla-bg-body); }
+
+.yla-popup .yanleaf-sidebar,
+.yla-popup .yanleaf-topbar,
+.yla-popup .sidebar-overlay { display: none !important; }
+
+.yla-popup .yanleaf-main { margin-left: 0 !important; }
+
+.yla-popup .yanleaf-content {
+    padding: 0;
+    max-width: 100%;
+    background: transparent;
+}
+
+.yla-popup #content-main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.yla-popup .submit-row {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+
+/* Popup 小屏全屏铺满 */
+@media (max-width: 860px) {
+    .yla-popup #content-main {
+        max-width: 100%;
+        padding: 1rem;
+    }
+    .yla-popup .yanleaf-content {
+        padding: 0;
+    }
+    .yla-popup fieldset.module .form-row {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+}
+
+/* ----------------------------------------------------------
+   18. Bulma Calendar 美化 + 深色适配
+   ---------------------------------------------------------- */
+.datetimepicker-dialog {
+    border-radius: var(--yla-radius-lg) !important;
+    box-shadow: var(--yla-shadow-lg) !important;
+    border: 1px solid var(--yla-border) !important;
+    font-family: inherit !important;
+    overflow: hidden;
+}
+.datetimepicker-dialog .datepicker-nav,
+.datetimepicker-dialog .timepicker-nav {
+    font-weight: 600 !important;
+}
+.datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date {
+    border-radius: var(--yla-radius-sm) !important;
+    font-weight: 500 !important;
+    transition: all 0.12s ease !important;
+}
+.datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date:hover {
+    background: var(--yla-bg-hover) !important;
+}
+.datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date.is-today {
+    border-color: #3b82f6 !important;
+    background: rgba(59,130,246,0.08) !important;
+    font-weight: 700 !important;
+}
+.datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date.is-active {
+    background: var(--yla-text-primary) !important;
+    color: var(--yla-bg-card) !important;
+    border-color: var(--yla-text-primary) !important;
+    font-weight: 700 !important;
+}
+.datetimepicker-dialog button {
+    border-radius: var(--yla-radius-sm) !important;
+    font-weight: 600 !important;
+    transition: all 0.12s ease !important;
+}
+
+/* ── 深色模式 ── */
+.theme-dark .datetimepicker-dialog {
+    background: #1e293b !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5) !important;
+    border-color: #334155 !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-nav,
+.theme-dark .datetimepicker-dialog .timepicker-nav {
+    background: #0f172a !important;
+    color: #f1f5f9 !important;
+    border-bottom-color: #334155 !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-nav .datepicker-nav-month,
+.theme-dark .datetimepicker-dialog .datepicker-nav .datepicker-nav-year {
+    color: #f1f5f9 !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date {
+    color: #e2e8f0 !important;
+    border-color: transparent !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date:hover {
+    background: #334155 !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date.is-today {
+    border-color: #60a5fa !important;
+    background: rgba(96,165,250,0.18) !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date.is-active {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #f1f5f9 !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-date.is-disabled {
+    color: #475569 !important;
+    opacity: 0.4;
+}
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-days .datepicker-day {
+    color: #94a3b8 !important;
+}
+.theme-dark .datetimepicker-dialog button {
+    color: #e2e8f0 !important;
+    background: transparent !important;
+}
+.theme-dark .datetimepicker-dialog button:hover {
+    background: #334155 !important;
+}
+.theme-dark .datetimepicker-dialog button.is-primary {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+.theme-dark .datetimepicker-dialog .datetimepicker-footer {
+    border-top-color: #334155 !important;
+    background: #0f172a !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-years .datepicker-year,
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-years .datepicker-month {
+    color: #e2e8f0 !important;
+}
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-years .datepicker-year.is-active,
+.theme-dark .datetimepicker-dialog .datepicker-body .datepicker-years .datepicker-month.is-active {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+/* ----------------------------------------------------------
+   19. 隐藏类（Django forms.css 带的，我们主题没有）
+   ---------------------------------------------------------- */
+.hidden, .form-row .hidden { display: none !important; }
+
+/* ----------------------------------------------------------
+   20. 深色模式补充覆盖
+   ---------------------------------------------------------- */
+.theme-dark .table tr:hover td {
+    background: var(--yla-bg-hover) !important;
+}
+.theme-dark .status-toggle.is-active {
+    background: #064e3b;
+    color: #6ee7b7;
+    border-color: #047857;
+}
+.theme-dark .status-toggle.is-inactive {
+    background: #450a0a;
+    color: #fca5a5;
+    border-color: #991b1b;
+}
+.theme-dark .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: var(--yla-text-muted) transparent transparent transparent;
+}
+.theme-dark .flatpickr-calendar {
+    background: var(--yla-bg-card);
+    box-shadow: var(--yla-shadow-lg);
+}
+
+/* ============================================================
+   YLA Components — 组件样式
+   ============================================================ */
+
+/* 统计卡片 */
+.yla-stat-card { padding: 1.25rem; }
+.yla-stat-icon { font-size: 1.5rem; }
+.yla-stat-value { font-size: 1.75rem; font-weight: 700; line-height: 1.2; }
+.yla-stat-title { font-size: 0.8rem; margin-top: 0.25rem; }
+
+/* 状态标签 */
+.yla-status-badge {
+    display: inline-block; padding: 3px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+}
+.yla-badge-active { background: #ebffeb; color: #257942; }
+.yla-badge-inactive { background: #ffe8e8; color: #b53b3b; }
+
+/* 操作按钮 */
+.yla-action-btn {
+    padding: 6px 16px; border-radius: 6px;
+    border: 1px solid var(--yla-border, #dbdbdb);
+    background: #fff; cursor: pointer; font-size: 13px; transition: all 0.15s;
+}
+.yla-action-btn:hover { background: #f5f5f5; }
+
+/* 空状态 */
+.yla-empty-state { border: 2px dashed var(--yla-border, #dbdbdb); border-radius: 12px; }
+.yla-empty-icon { opacity: 0.4; }
+
+/* 时间线 */
+.yla-timeline { padding-left: 1rem; border-left: 2px solid var(--yla-border, #dbdbdb); }
+.yla-timeline-item { position: relative; padding-left: 1.5rem; padding-bottom: 1rem; }
+.yla-timeline-item:last-child { padding-bottom: 0; }
+.yla-timeline-dot {
+    position: absolute; left: -0.55rem; top: 0;
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
+.yla-timeline-dot .fas { font-size: 8px; color: #fff; }
+
+/* 删除链接 */
+.yla-delete-link { color: #f14668 !important; }
+.yla-delete-link:hover { color: #cc0f35 !important; }
+
+/* 暗黑模式适配 */
+.theme-dark .yla-action-btn { background: var(--yla-bg, #1a1a2e); border-color: var(--yla-border-dark, #333); color: #ddd; }
+.theme-dark .yla-action-btn:hover { background: #3a3a3a; }
+.theme-dark .yla-badge-active { background: #1a3a1a; color: #6dd98b; }
+.theme-dark .yla-badge-inactive { background: #3a1a1a; color: #e87070; }

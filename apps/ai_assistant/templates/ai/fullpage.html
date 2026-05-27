@@ -1,0 +1,143 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}AI 数据助手 — YanLeafAdmin{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .ai-full-wrap { display:flex;flex-direction:column;height:calc(100vh - 140px);max-width:900px;margin:0 auto; }
+    .ai-full-body { flex:1;overflow-y:auto;padding:16px 20px;background:var(--yla-bg-card,#fff);border:1px solid var(--yla-border,#e5e5e5);border-radius:12px 12px 0 0; }
+    .ai-full-msg { display:flex;margin-bottom:16px; }
+    .ai-full-msg.user { justify-content:flex-end; }
+    .ai-full-bubble { max-width:78%;padding:10px 16px;border-radius:14px;font-size:.9rem;line-height:1.6;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.03); }
+    .ai-full-msg.bot .ai-full-bubble { background:var(--yla-bg-hover,#f5f6fa);color:var(--yla-text-primary,#333);border-bottom-left-radius:4px; }
+    .ai-full-msg.user .ai-full-bubble { background:#485fc7;color:#fff;border-bottom-right-radius:4px; }
+    .ai-full-stat { font-size:2.5rem;font-weight:700;color:#485fc7;display:block;margin-top:4px; }
+    .ai-full-chart { width:100%;height:380px;margin-top:8px; }
+    .ai-full-input-row { display:flex;gap:10px;padding:12px 0; }
+    #ai-full-input { flex:1;padding:12px 16px;border:1px solid var(--yla-border,#ddd);border-radius:8px;font-size:.9rem;background:var(--yla-bg-input,#fafafa);color:var(--yla-text-primary);outline:none; }
+    #ai-full-input:focus { border-color:#485fc7; }
+    #ai-full-send { padding:12px 24px;background:#485fc7;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600; }
+    #ai-full-send:hover { opacity:.9; }
+    .ai-full-empty { text-align:center;padding:60px 20px;color:var(--yla-text-muted,#999); }
+    .ai-full-empty i { font-size:3rem;display:block;margin-bottom:16px;opacity:.3; }
+    .ai-full-examples { display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px; }
+    .ai-full-example { padding:8px 16px;background:var(--yla-bg-hover,#f0f2f5);border-radius:20px;font-size:.82rem;cursor:pointer;transition:all .12s;color:var(--yla-text-secondary); }
+    .ai-full-example:hover { background:#485fc7;color:#fff; }
+    .ai-dot { width:7px;height:7px;border-radius:50%;background:#bbb;animation:aiDotBounce 1.4s infinite;display:inline-block }
+    .ai-dot:nth-child(2) { animation-delay:.2s } .ai-dot:nth-child(3) { animation-delay:.4s }
+    @keyframes aiDotBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+    .ai-gen-tag { font-size:.6rem;color:var(--yla-text-muted,#999);border:1px solid var(--yla-border,#ddd);padding:1px 5px;border-radius:3px;margin-left:6px;opacity:.7 }
+    .theme-dark .ai-full-body { background:#1e1e2e;border-color:#333; }
+    .theme-dark .ai-full-msg.bot .ai-full-bubble { background:#2a2a3a;color:#ddd; }
+    .theme-dark #ai-full-input { background:#2a2a3a;border-color:#444;color:#ddd; }
+    .theme-dark .ai-full-example { background:#2a2a3a; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ai-full-wrap">
+    <div id="ai-full-body" class="ai-full-body">
+        <div class="ai-full-empty">
+            <i class="fas fa-robot"></i>
+            <p style="font-size:1.1rem;font-weight:600;">AI 数据助手</p>
+            <p style="font-size:.85rem;">我是你的数据库查询助手，可以帮你快速了解系统数据。</p>
+            <div class="ai-full-examples">
+                <span class="ai-full-example" onclick="quickAsk(this)">最近7天新增了多少用户？</span>
+                <span class="ai-full-example" onclick="quickAsk(this)">每个组有多少用户？</span>
+                <span class="ai-full-example" onclick="quickAsk(this)">活跃用户占比是多少？</span>
+                <span class="ai-full-example" onclick="quickAsk(this)">最近什么模块修改最多？</span>
+            </div>
+        </div>
+    </div>
+    <div class="ai-full-input-row">
+        <input type="text" id="ai-full-input" placeholder="输入数据问题，按 Enter 发送…" autocomplete="nope">
+        <button id="ai-full-send"><i class="fas fa-paper-plane"></i> 发送</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{% static 'yanleafadmin/vendor/echarts/echarts.min.js' %}"></script>
+<script>
+(function() {
+    var $input = document.getElementById('ai-full-input');
+    var $body = document.getElementById('ai-full-body');
+    var hasMsg = false;
+
+    function loadCfg() {
+        try { return JSON.parse(localStorage.getItem('yla_ai_config') || '{}'); } catch(e) { return {}; }
+    }
+
+    function addMsg(type, html) {
+        if (!hasMsg) { $body.innerHTML = ''; hasMsg = true; }
+        var d = document.createElement('div');
+        d.className = 'ai-full-msg ' + type;
+        var label = type === 'bot' ? '<span class="ai-gen-tag">AI 生成</span>' : '';
+        d.innerHTML = '<div class="ai-full-bubble">' + html + label + '</div>';
+        $body.appendChild(d);
+        $body.scrollTop = $body.scrollHeight;
+    }
+    function addTyping() {
+        if (!hasMsg) { $body.innerHTML = ''; hasMsg = true; }
+        var d = document.createElement('div');
+        d.className = 'ai-full-msg bot';
+        d.innerHTML = '<div class="ai-full-bubble" style="display:flex;align-items:center;gap:5px"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></div>';
+        $body.appendChild(d);
+        return d;
+    }
+
+    function send() {
+        var q = $input.value.trim();
+        if (!q) return;
+        var cfg = loadCfg();
+        addMsg('user', q); $input.value = '';
+        var t = addTyping();
+        var x = new XMLHttpRequest();
+        x.open('POST', '/api/ai/query/');
+        x.setRequestHeader('Content-Type', 'application/json');
+        x.setRequestHeader('X-CSRFToken', window.YLA.csrfToken || '');
+        x.onload = function() {
+            t.remove();
+            try { var d = JSON.parse(x.responseText); if (d.error) { addMsg('bot', '❌ ' + d.error); } else { show(d); } }
+            catch(e) { addMsg('bot', '❌ 响应解析失败'); }
+        };
+        x.onerror = function() { t.remove(); addMsg('bot', '❌ 网络请求失败'); };
+        x.send(JSON.stringify({ question: q, api_key: cfg.api_key || '', api_base: cfg.api_base || '', model: cfg.model || '' }));
+    }
+
+    function show(d) {
+        var h = '<b>' + (d.title || '查询结果') + '</b><br/>';
+        if (d.chart === 'stat') {
+            addMsg('bot', h + '<span class="ai-full-stat">' + (typeof d.result === 'number' ? d.result.toLocaleString() : d.result) + '</span>');
+        } else if (d.chartData && d.chartData.length) {
+            var cid = 'aicf-' + Date.now();
+            addMsg('bot', h + '<div class="ai-full-chart" id="' + cid + '"></div>');
+            setTimeout(function() {
+                var el = document.getElementById(cid); if (!el) return;
+                var c = echarts.init(el);
+                var dark = document.documentElement.classList.contains('theme-dark');
+                var opt = { tooltip: { trigger: d.chart === 'pie' ? 'item' : 'axis' } };
+                if (d.chart === 'pie') {
+                    opt.series = [{ type: 'pie', radius: ['35%', '65%'], data: d.chartData.map(function(x) { return { name: x.label, value: x.value }; }), label: { fontSize: 11, color: dark ? '#aaa' : '#555' } }];
+                } else {
+                    opt.xAxis = { type: 'category', data: d.chartData.map(function(x) { return x.label; }), axisLabel: { fontSize: 10, color: dark ? '#aaa' : '#555' } };
+                    opt.yAxis = { type: 'value', axisLabel: { fontSize: 10, color: dark ? '#aaa' : '#555' } };
+                    opt.series = [{ type: d.chart === 'bar' ? 'bar' : 'line', smooth: d.chart !== 'bar', data: d.chartData.map(function(x) { return x.value; }) }];
+                    if (d.chart === 'trend') { opt.series[0].areaStyle = { opacity: .08 }; }
+                }
+                c.setOption(opt);
+            }, 300);
+        } else {
+            addMsg('bot', h + '<span style="font-size:.85rem">' + JSON.stringify(d.result).substring(0, 300) + '</span>');
+        }
+    }
+
+    window.quickAsk = function(el) { $input.value = el.textContent; send(); };
+    document.getElementById('ai-full-send').onclick = send;
+    $input.onkeydown = function(e) { if (e.key === 'Enter') send(); };
+})();
+</script>
+{% endblock %}

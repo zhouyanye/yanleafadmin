@@ -1,0 +1,52 @@
+{% load admin_list i18n %}
+<div class="paginator">
+
+    {# 页码导航 #}
+    <div class="paginator-controls">
+        {% if pagination_required %}
+        {# 上一页 #}
+        {% if cl.page_num > 1 %}
+        <a href="?p={{ cl.page_num|add:'-1' }}{% if cl.yla_qs_extra %}&{{ cl.yla_qs_extra }}{% endif %}{% for k,v in cl.params.items %}{% if k != 'p' and k != 'per_page' and k != 'all' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="paginator-prev">
+            <i class="fas fa-chevron-left"></i> {% translate '上一页' %}
+        </a>
+        {% else %}
+        <span class="paginator-prev disabled"><i class="fas fa-chevron-left"></i> {% translate '上一页' %}</span>
+        {% endif %}
+
+        {# 页码 #}
+        <span class="paginator-pages">
+            {% for i in page_range %}
+                {% if i == cl.paginator.ELLIPSIS %}
+                    {{ cl.paginator.ELLIPSIS }}
+                {% elif i == cl.page_num %}
+                    <span class="this-page">{{ i }}</span>
+                {% else %}
+                    <a href="?p={{ i }}{% if cl.yla_qs_extra %}&{{ cl.yla_qs_extra }}{% endif %}{% for k,v in cl.params.items %}{% if k != 'p' and k != 'per_page' and k != 'all' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+        </span>
+
+        {# 下一页 #}
+        {% if cl.page_num < cl.paginator.num_pages %}
+        <a href="?p={{ cl.page_num|add:'1' }}{% if cl.yla_qs_extra %}&{{ cl.yla_qs_extra }}{% endif %}{% for k,v in cl.params.items %}{% if k != 'p' and k != 'per_page' and k != 'all' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="paginator-next">
+            {% translate '下一页' %} <i class="fas fa-chevron-right"></i>
+        </a>
+        {% else %}
+        <span class="paginator-next disabled">{% translate '下一页' %} <i class="fas fa-chevron-right"></i></span>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    {# 信息 + 每页条数 #}
+    <div class="paginator-info">
+        <span>{{ cl.page_end }} / {{ cl.full_result_count }} 条</span>
+        <select class="paginator-per-page" id="paginator-per-page" onchange="YLA.changePageSize(this.value)">
+            <option value="10"  {% if cl.list_per_page == 10 %}selected{% endif %}>10 条/页</option>
+            <option value="25"  {% if cl.list_per_page == 25 %}selected{% endif %}>25 条/页</option>
+            <option value="50"  {% if cl.list_per_page == 50 %}selected{% endif %}>50 条/页</option>
+            <option value="100" {% if cl.list_per_page == 100 %}selected{% endif %}>100 条/页</option>
+            <option value="0"   {% if cl.yla_is_all %}selected{% endif %}>全部</option>
+        </select>
+    </div>
+
+</div>

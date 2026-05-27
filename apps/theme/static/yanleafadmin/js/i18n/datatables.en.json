@@ -1,0 +1,29 @@
+{
+    "processing":   "Processing...",
+    "lengthMenu":   "Show _MENU_ entries",
+    "zeroRecords":  "No matching records found",
+    "info":         "Showing _START_ to _END_ of _TOTAL_ entries",
+    "infoEmpty":    "Showing 0 to 0 of 0 entries",
+    "infoFiltered": "(filtered from _MAX_ total entries)",
+    "search":       "Search:",
+    "paginate": {
+        "first":    "First",
+        "previous": "Previous",
+        "next":     "Next",
+        "last":     "Last"
+    },
+    "loadingRecords": "Loading...",
+    "emptyTable":     "No data available in table",
+    "buttons": {
+        "copy": "Copy",
+        "copyTitle": "Copied to clipboard",
+        "copySuccess": {
+            "1": "Copied 1 row to clipboard",
+            "_": "Copied %d rows to clipboard"
+        },
+        "excel": "Export Excel",
+        "csv": "Export CSV",
+        "print": "Print",
+        "colvis": "Column visibility"
+    }
+}

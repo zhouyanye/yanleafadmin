@@ -1,0 +1,22 @@
+# YanLeafAdmin — 极简白色现代 Django Admin 主题体系
+# pip install -r requirements.txt
+
+# 核心
+Django>=5.0
+django-simple-captcha>=0.5
+
+# AI 助手
+requests>=2.28
+
+# Word 导出（可选）
+python-docx>=1.0
+
+# SQL DDL 解析
+sqlparse>=0.4
+
+# 系统监控
+psutil>=5.9
+
+# 数据库（可选，如使用 MySQL/PostgreSQL）
+# PyMySQL>=1.0
+# psycopg2-binary>=2.9

@@ -1,0 +1,394 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'yanleafadmin/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div>
+
+    <div class="mb-6">
+        <h1 class="title is-3 has-text-weight-bold mb-2">{% translate '控制台' %}</h1>
+        <p class="subtitle is-6 has-text-grey-light">{% translate '欢迎回来' %}，{{ user.username }}。{% translate '以下是系统核心组件的实时运行指标。' %}</p>
+    </div>
+
+    <div class="columns is-desktop is-multiline mb-6">
+
+        <div class="column is-3-desktop is-6-tablet">
+            <div class="box dashboard-stat-card p-5" style="height:110px;display:flex;flex-direction:column;justify-content:space-between;">
+                <p class="heading mb-1"><i class="fas fa-users"></i> {% translate '总注册用户' %}</p>
+                <div>
+                    <span class="title is-3 has-text-weight-bold" style="margin-bottom:0;white-space:nowrap;">{{ total_users_count }}</span>
+                    <div class="trend-tag" style="font-size:0.7rem;color:#22c55e;margin-top:0.15rem;">
+                        <i class="fas fa-arrow-up"></i> 本周 +{{ week_new }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="column is-3-desktop is-6-tablet">
+            <div class="box dashboard-stat-card p-5" style="height:110px;display:flex;flex-direction:column;justify-content:space-between;">
+                <p class="heading mb-1"><i class="fas fa-user-plus"></i> {% translate '今日新增' %}</p>
+                <div>
+                    <span class="title is-3 has-text-weight-bold" style="margin-bottom:0;white-space:nowrap;">{{ today_users_count }}</span>
+                    {% if today_vs_yesterday != 0 %}
+                    <div class="trend-tag" style="font-size:0.7rem;{% if today_vs_yesterday > 0 %}color:#22c55e;{% else %}color:#ef4444;{% endif %}margin-top:0.15rem;">
+                        <i class="fas fa-arrow-{% if today_vs_yesterday > 0 %}up{% else %}down{% endif %}"></i>
+                        {% if today_vs_yesterday > 0 %}+{% endif %}{{ today_vs_yesterday }} ({% if today_pct > 0 %}+{% endif %}{{ today_pct }}%)
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="column is-3-desktop is-6-tablet">
+            <div class="box dashboard-stat-card p-5" style="height:110px;display:flex;flex-direction:column;justify-content:space-between;">
+                <p class="heading mb-1"><i class="fas fa-user-check"></i> {% translate '活跃用户' %}</p>
+                <div>
+                    <span class="title is-3 has-text-weight-bold" style="margin-bottom:0;white-space:nowrap;">{{ active_users_count }}</span>
+                    <div class="trend-tag" style="font-size:0.7rem;color:var(--yla-text-muted);margin-top:0.15rem;">
+                        占比 {{ active_pct }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="column is-3-desktop is-6-tablet">
+            <div class="box dashboard-stat-card p-5" style="height:110px;display:flex;flex-direction:column;justify-content:space-between;">
+                <p class="heading mb-1"><i class="fas fa-microchip"></i> {% translate '服务器内存负载' %}</p>
+                <div>
+                    <span class="title is-3 has-text-weight-bold" style="margin-bottom:0;white-space:nowrap;letter-spacing:-0.03em;">{{ memory_usage }}</span>
+                    <div class="trend-tag" style="font-size:0.7rem;color:var(--yla-text-muted);margin-top:0.15rem;">
+                        系统运行中
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="columns">
+        <div class="column is-4">
+            <div class="box p-5 dashboard-stat-card" style="max-height: 420px; overflow-y: auto;">
+                <h3 class="subtitle is-6 has-text-weight-bold mb-3">{% translate '业务模块导航' %}</h3>
+
+                {% if app_list %}
+                <div class="is-flex is-flex-direction-column gap-3">
+                    {% for app in app_list %}
+                    <div class="mb-3">
+                        <p class="is-size-7 has-text-weight-semibold has-text-grey-light uppercase tracking-wider mb-2"
+                           style="letter-spacing: 0.05em;">
+                            {{ app.name }}
+                        </p>
+
+                        <div class="is-flex is-flex-direction-column gap-2" style="padding-left: 4px;">
+                            {% for model in app.models %}
+                            <div class="quick-link-item p-2 is-flex is-justify-content-space-between is-align-items-center">
+                                <div>
+                                    {% if model.admin_url %}
+                                    <a href="{{ model.admin_url }}" class="has-text-weight-medium is-size-6">
+                                        <i class="fas {% if 'user' in model.object_name|lower %}fa-user{% elif 'group' in model.object_name|lower %}fa-users{% elif 'permission' in model.object_name|lower or 'perm' in model.object_name|lower %}fa-shield-alt{% elif 'log' in model.object_name|lower %}fa-history{% else %}fa-table{% endif %} mr-1" style="opacity:0.5;font-size:0.8rem;"></i>
+                                        {{ model.name }}
+                                    </a>
+                                    {% else %}
+                                    <span class="has-text-grey-light is-size-6">{{ model.name }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="is-flex gap-2">
+                                    {% if model.add_url %}
+                                    <a href="{{ model.add_url }}" class="button is-small is-light is-rounded py-0 px-2" title="{% translate '新增' %}">
+                                        <span class="has-text-grey">+</span>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="has-text-centered py-5">
+                    <p class="has-text-grey-light is-size-6">{% translate '暂无可用业务模块' %}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="column is-8">
+            <div class="box p-5 dashboard-stat-card" style="min-height:380px;overflow:hidden;">
+                <h3 class="subtitle is-6 has-text-weight-bold mb-2">
+                    <i class="fas fa-chart-line"></i> {% translate '最近 7 天注册趋势' %}
+                </h3>
+                <div id="main-chart" style="width:100%;height:330px;"></div>
+            </div>
+        </div>
+    </div>
+
+    {% if recent_logs %}
+    <div class="box dashboard-stat-card p-5" style="margin-top:1.5rem;">
+        <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
+            <h3 class="subtitle is-6 has-text-weight-bold" style="margin-bottom:0;">
+                <i class="fas fa-history"></i> {% translate '系统动态' %}
+            </h3>
+            <div class="is-flex is-align-items-center" style="gap:0.5rem;font-size:0.72rem;color:var(--yla-text-muted);">
+                <i class="fab {{ os_icon }}"></i>
+                <span>{{ client_ip|default:'—' }}</span>
+                <i class="fab {{ browser_icon }}" style="margin-left:0.5rem;"></i>
+            </div>
+        </div>
+        <div class="timeline">
+            {% for log in recent_logs %}
+            <div class="timeline-item yla-log-row" style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.6rem 0;{% if not forloop.last %}border-bottom:1px solid var(--yla-border-light);{% endif %}" data-log-id="{{ log.id }}">
+                <div class="timeline-dot" style="flex-shrink:0;width:8px;height:8px;border-radius:50%;background:{% if log.badge == 'success' %}#22c55e{% elif log.badge == 'danger' %}#ef4444{% elif log.badge == 'warning' %}#f59e0b{% else %}#3b82f6{% endif %};margin-top:0.45rem;"></div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                        <strong style="font-size:0.82rem;">{{ log.user }}</strong>
+                        <span class="yla-badge yla-badge-{{ log.badge }}" style="font-size:0.7rem;">{{ log.action }}</span>
+                        {% if log.module %}
+                        <span style="font-size:0.7rem;color:var(--yla-text-muted);">{{ log.module }}</span>
+                        {% endif %}
+                    </div>
+                    <div style="font-size:0.82rem;color:var(--yla-text-primary);margin-top:2px;">
+                        {{ log.object_name }}
+                    </div>
+                    {% if log.has_diff %}
+                    <div class="yla-log-diff" style="display:none;margin-top:6px;padding:8px 10px;background:var(--yla-bg-hover);border-radius:6px;font-size:0.75rem;">
+                        <div class="yla-diff-loading has-text-grey">{% translate '加载变更详情...' %}</div>
+                    </div>
+                    <a href="#" class="yla-log-expand is-size-7" style="display:inline-block;margin-top:4px;" data-log-id="{{ log.id }}">
+                        <i class="fas fa-chevron-down"></i> {% translate '展开变更' %}
+                    </a>
+                    {% endif %}
+                    <span style="font-size:0.7rem;color:var(--yla-text-muted);margin-left:0.5rem;white-space:nowrap;">{{ log.time|date:"m-d H:i" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="columns" style="margin-top:1.5rem;">
+        <div class="column is-8">
+            <div class="box dashboard-stat-card p-5" style="min-height:200px;overflow:hidden;">
+                <h3 class="subtitle is-6 has-text-weight-bold mb-2">
+                    <i class="fas fa-calendar-alt"></i> {% translate '近半年操作热力图' %}
+                </h3>
+                <div id="heatmap-chart" style="width:100%;height:220px;"></div>
+            </div>
+        </div>
+        <div class="column is-4">
+            <div class="box dashboard-stat-card p-5" style="min-height:200px;overflow:hidden;">
+                <h3 class="subtitle is-6 has-text-weight-bold mb-2">
+                    <i class="fas fa-chart-pie"></i> {% translate '近7天模块活跃度' %}
+                </h3>
+                <div id="module-pie-chart" style="width:100%;height:220px;"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+(function() {
+    var chartDom = document.getElementById('main-chart');
+    if (!chartDom) return;
+    var chart = null;
+
+    function getTheme() {
+        var d = document.documentElement.classList.contains('theme-dark');
+        return {
+            isDark: d,
+            text: d ? '#94a3b8' : '#64748b',
+            line: d ? '#60a5fa' : '#3b82f6',
+            grid: d ? '#1e293b' : '#f1f5f9',
+            axis: d ? '#334155' : '#e2e8f0',
+            bg: d ? '#1e293b' : '#fff',
+            bgBorder: d ? '#334155' : '#e2e8f0',
+            tipText: d ? '#e2e8f0' : '#0f172a',
+            area: d
+                ? new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(96,165,250,.25)'},{offset:1,color:'rgba(96,165,250,0)'}])
+                : new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(59,130,246,.15)'},{offset:1,color:'rgba(59,130,246,0)'}])
+        };
+    }
+
+    function buildOption(t) {
+        return {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: t.bg, borderColor: t.bgBorder,
+                textStyle: { color: t.tipText, fontSize: 13 },
+                formatter: function(p) { return p[0].axisValue + ' 新增 <b>' + p[0].value + '</b> 人'; }
+            },
+            grid: { top: 15, right: 20, bottom: 25, left: 45 },
+            xAxis: {
+                type: 'category', boundaryGap: false,
+                data: {{ chart_labels|safe }},
+                axisLine: { lineStyle: { color: t.axis } },
+                axisTick: { show: false },
+                axisLabel: { color: t.text, fontSize: 11 }
+            },
+            yAxis: {
+                type: 'value', minInterval: 1,
+                splitLine: { lineStyle: { color: t.grid } },
+                axisLabel: { color: t.text, fontSize: 11 }
+            },
+            series: [{
+                data: {{ chart_data|safe }},
+                type: 'line', smooth: true,
+                symbol: 'circle', symbolSize: 6,
+                lineStyle: { color: t.line, width: 2.5 },
+                itemStyle: { color: t.line },
+                areaStyle: { color: t.area },
+            }]
+        };
+    }
+
+    function render() {
+        if (chart) chart.dispose();
+        chart = echarts.init(chartDom);
+        chart.setOption(buildOption(getTheme()));
+    }
+
+    render();
+    window.addEventListener('resize', function() { if (chart) chart.resize(); });
+    var observer = new MutationObserver(function() { render(); });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+})();
+
+// ── Activity heatmap ──
+(function() {
+    var dom = document.getElementById('heatmap-chart');
+    if (!dom) return;
+    var chart = echarts.init(dom);
+    var data = {{ heatmap_data_json|default:'[]'|safe }};
+
+    function buildHeatmap() {
+        var d = document.documentElement.classList.contains('theme-dark');
+        var today = new Date();
+        var startDate = new Date(today.getTime() - 180 * 24 * 3600 * 1000);
+
+        // Build full date range
+        var dateMap = {};
+        data.forEach(function(item) { dateMap[item[0]] = item[1]; });
+
+        var seriesData = [];
+        for (var dt = new Date(startDate); dt <= today; dt.setDate(dt.getDate() + 1)) {
+            var ds = dt.toISOString().slice(0, 10);
+            seriesData.push([ds, dateMap[ds] || 0]);
+        }
+
+        var option = {
+            tooltip: {
+                formatter: function(p) { return p.value[0] + '<br/>{% translate "操作" %}: <b>' + p.value[1] + '</b> {% translate "次" %}'; }
+            },
+            visualMap: {
+                min: 0, max: Math.max.apply(null, data.map(function(i){return i[1];}).concat([1])),
+                type: 'piecewise', orient: 'horizontal', left: 'center', bottom: 0,
+                textStyle: { color: d ? '#94a3b8' : '#555' },
+                pieces: [
+                    { value: 0, color: d ? '#1a1a2e' : '#e8e8e8' },
+                    { gt: 0, lte: 2, color: d ? '#1a4a1a' : '#6bc470' },
+                    { gt: 2, lte: 5, color: d ? '#2d6a1e' : '#2ea84a' },
+                    { gt: 5, lte: 10, color: d ? '#3d7b24' : '#1d8c36' },
+                    { gt: 10, color: d ? '#4d8c2a' : '#156b2a' }
+                ]
+            },
+            calendar: {
+                top: 30, left: 40, right: 20, bottom: 30,
+                range: [(new Date(Date.now() - 180*86400000)).toISOString().slice(0,10), today.toISOString().slice(0,10)],
+                cellSize: [13, 13],
+                yearLabel: { show: false },
+                dayLabel: { fontSize: 9, color: d ? '#667' : '#999', firstDay: 1 },
+                monthLabel: { fontSize: 10, color: d ? '#667' : '#888', position: 'start', margin: 8 },
+                itemStyle: { borderColor: d ? '#2a2a3a' : '#ddd', borderWidth: 2 }
+            },
+            series: [{
+                type: 'heatmap', coordinateSystem: 'calendar',
+                data: seriesData,
+                label: { show: false }
+            }]
+        };
+        chart.setOption(option);
+    }
+    buildHeatmap();
+    window.addEventListener('resize', function() { chart.resize(); });
+    new MutationObserver(function() { buildHeatmap(); }).observe(document.documentElement, {attributes:true,attributeFilter:['class']});
+})();
+
+// ── Module rose chart ──
+(function() {
+    var dom2 = document.getElementById('module-pie-chart');
+    if (!dom2) return;
+    var chart2 = echarts.init(dom2);
+    var moduleData = {{ module_stats_json|default:'[]'|safe }};
+
+    function buildRose() {
+        var d = document.documentElement.classList.contains('theme-dark');
+        chart2.setOption({
+            tooltip: { trigger: 'item', formatter: '{b}: {c} ' + '次' + ' ({d}%)' },
+            legend: { bottom: 0, textStyle: { fontSize: 9, color: d ? '#94a3b8' : '#64748b' } },
+            series: [{
+                type: 'pie',
+                roseType: 'area',
+                radius: ['15%', '70%'],
+                center: ['50%', '45%'],
+                data: moduleData.length ? moduleData : [{name: '无数据', value: 0}],
+                label: { fontSize: 9, color: d ? '#94a3b8' : '#555' },
+                emphasis: { label: { fontSize: 13, fontWeight: 'bold' } },
+                itemStyle: { borderRadius: 4, borderColor: d ? '#1a1a2e' : '#fff', borderWidth: 2 }
+            }]
+        });
+    }
+    buildRose();
+    window.addEventListener('resize', function() { chart2.resize(); });
+    new MutationObserver(function() { buildRose(); }).observe(document.documentElement, {attributes:true,attributeFilter:['class']});
+})();
+
+// ── Diff expand/collapse ──
+(function($) {
+    $(document).on('click', '.yla-log-expand', function(e) {
+        e.preventDefault();
+        var $link = $(this);
+        var logId = $link.data('log-id');
+        var $row = $link.closest('.yla-log-row');
+        var $diff = $row.find('.yla-log-diff');
+
+        if ($diff.is(':visible')) {
+            $diff.slideUp(150);
+            $link.html('<i class="fas fa-chevron-down"></i> ' + '{% translate "展开变更" %}');
+        } else {
+            $diff.slideDown(150);
+            $link.html('<i class="fas fa-chevron-up"></i> ' + '{% translate "收起" %}');
+
+            // Load diff data if not yet loaded
+            if ($diff.find('.yla-diff-loading').length) {
+                $.getJSON('/admin/log-diff/' + logId + '/', function(data) {
+                    if (data.error) {
+                        $diff.html('<span class="has-text-grey">' + data.error + '</span>');
+                    } else {
+                        var html = data.changes.map(function(c) {
+                            return '<div style="margin-bottom:3px;"><span style="color:var(--yla-text-muted);">' + c.field + '</span>: ' +
+                                '<span style="text-decoration:line-through;color:#ef4444;">' + (c.old || '—') + '</span> ' +
+                                '<i class="fas fa-arrow-right has-text-grey" style="font-size:0.6rem;"></i> ' +
+                                '<span style="color:#22c55e;font-weight:500;">' + (c.new || '—') + '</span></div>';
+                        }).join('');
+                        if (!html) html = '<span class="has-text-grey">{% translate "无字段级变更记录" %}</span>';
+                        $diff.html(html);
+                    }
+                }).fail(function() {
+                    $diff.html('<span class="has-text-grey">{% translate "加载失败" %}</span>');
+                });
+            }
+        }
+    });
+})(jQuery);
+</script>
+{% endblock %}

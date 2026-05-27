@@ -1,0 +1,10 @@
+recursive-include apps/theme/static *
+recursive-include apps/theme/templates *
+recursive-include apps/dashboard_engine/templates *
+recursive-include apps/erd_engine/templates *
+recursive-include apps/erd_engine/static *
+recursive-include apps/ai_assistant/templates *
+recursive-include apps/ai_assistant/static *
+include README.md
+include LICENSE
+include requirements.txt

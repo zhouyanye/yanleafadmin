@@ -1,0 +1,182 @@
+/* ============================================================
+   YanLeafAdmin — 添加/编辑表单样式
+   ============================================================ */
+
+#content-main { max-width: 780px; }
+
+/* ── 对象工具 ── */
+.object-tools {
+    margin: 0 0 1rem 0 !important; padding: 0 !important;
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+}
+.object-tools a {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.4rem 0.85rem; border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-sm); background: var(--yla-bg-card);
+    color: var(--yla-text-secondary); font-size: 0.8rem; font-weight: 600;
+    text-decoration: none !important; text-transform: none !important;
+    letter-spacing: 0 !important; transition: all 0.12s;
+}
+.object-tools a:hover { border-color: var(--yla-text-primary); color: var(--yla-text-primary); }
+.object-tools .deletelink { color: #ef4444 !important; border-color: #fecaca; }
+.object-tools .deletelink:hover { background: #fef2f2; border-color: #ef4444; }
+.theme-dark .object-tools .deletelink:hover { background: #450a0a; }
+
+/* ── 错误 ── */
+.errornote {
+    background: #fef2f2 !important; border: 1px solid #fecaca !important;
+    border-radius: var(--yla-radius-md) !important; color: #dc2626 !important;
+    padding: 0.75rem 1rem !important; margin-bottom: 1rem !important;
+    font-size: 0.85rem !important;
+}
+.theme-dark .errornote {
+    background: #450a0a !important; border-color: #7f1d1d !important; color: #fca5a5 !important;
+}
+
+/* ── Fieldset ── */
+fieldset.module {
+    background: var(--yla-bg-card); border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-lg); box-shadow: var(--yla-shadow-sm);
+    margin-bottom: 1.25rem; padding: 0; overflow: hidden;
+}
+fieldset.module h2 {
+    background: transparent !important; color: var(--yla-text-primary) !important;
+    font-size: 0.9rem !important; font-weight: 700 !important;
+    padding: 1rem 1.4rem 0 !important; margin: 0 !important;
+    border-bottom: none !important; text-transform: none !important;
+    letter-spacing: 0 !important;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+fieldset.module h2::before {
+    content: ''; width: 4px; height: 18px; border-radius: 2px;
+    background: var(--yla-text-primary); display: inline-block;
+}
+
+.form-row {
+    padding: 0.9rem 1.4rem; border-bottom: 1px solid var(--yla-border-light);
+    display: flex; align-items: flex-start; gap: 1.5rem;
+}
+.form-row:last-child { border-bottom: none; }
+
+/* ── 标签区 ── */
+.form-row .form-label-side {
+    min-width: 140px; max-width: 170px; flex-shrink: 0; padding-top: 0.5rem;
+}
+.form-row label {
+    font-size: 0.82rem; font-weight: 600; color: var(--yla-text-primary);
+    display: flex; align-items: center; gap: 0.3rem;
+}
+.form-row label.required::after { content: '*'; color: #ef4444; font-weight: 700; font-size: 0.9rem; }
+.form-row .field-hint {
+    font-size: 0.68rem; color: var(--yla-text-muted); margin-top: 0.15rem; line-height: 1.35;
+}
+
+/* ── 控件区 ── */
+.form-row .form-field-box { flex: 1; min-width: 0; }
+.form-row input[type="text"],
+.form-row input[type="password"],
+.form-row input[type="email"],
+.form-row input[type="number"],
+.form-row input[type="url"],
+.form-row textarea,
+.form-row select {
+    width: 100%; max-width: 480px;
+    background: var(--yla-bg-input); border: 1px solid var(--yla-border);
+    border-radius: var(--yla-radius-sm); color: var(--yla-text-primary);
+    padding: 0.55rem 0.8rem; font-size: 0.86rem; outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s; font-family: inherit;
+}
+.form-row input:focus, .form-row textarea:focus, .form-row select:focus {
+    border-color: var(--yla-text-primary);
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.06);
+}
+.form-row .readonly { padding: 0.55rem 0; font-size: 0.86rem; color: var(--yla-text-secondary); }
+
+input.vDateField, input.vTimeField {
+    width: auto !important; max-width: 160px !important; font-family: inherit !important;
+}
+.datetimeshortcuts { display: none; }
+
+.form-row .selector { max-width: none; }
+.form-row .yla-filter-widget { margin-top: 0 !important; }
+.form-row .yla-filter-card { min-height: 200px; }
+.form-row .yla-filter-item { font-size: 0.78rem; padding: 0.35rem 0.65rem; }
+
+/* ── 帮助文本 ── */
+.form-row .form-help-text {
+    font-size: 0.7rem; color: var(--yla-text-muted); margin-top: 0.3rem;
+    max-width: 480px; line-height: 1.4;
+}
+.form-row .form-help-text ul { margin: 0.2rem 0 0 1.2rem; padding: 0; list-style: none; }
+.form-row .form-help-text li {
+    margin-bottom: 0.12rem; position: relative; padding-left: 0.8rem;
+}
+.form-row .form-help-text li::before {
+    content: '•'; position: absolute; left: 0; color: var(--yla-text-muted);
+}
+
+/* ── 密码校验 ── */
+.pwd-checklist { margin-top: 0.35rem; }
+.pwd-checklist li {
+    font-size: 0.7rem; color: var(--yla-text-muted); list-style: none;
+    padding: 0.1rem 0 0.1rem 1.2rem; position: relative;
+}
+.pwd-checklist li::before {
+    position: absolute; left: 0; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.6rem;
+}
+.pwd-checklist li.pending::before  { content: '\f111'; color: #d1d5db; }
+.pwd-checklist li.pass::before     { content: '\f058'; color: #22c55e; }
+.pwd-checklist li.fail::before     { content: '\f057'; color: #ef4444; }
+
+/* ── 错误列表 ── */
+.errorlist { list-style: none; margin: 0.3rem 0 0 0; padding: 0; }
+.errorlist li { font-size: 0.73rem; color: #dc2626; font-weight: 500; }
+
+/* ── 提示条 ── */
+.form-intro {
+    border-radius: var(--yla-radius-md); padding: 0.65rem 1rem;
+    font-size: 0.82rem; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* ── 提交行 ── */
+.submit-row {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 1rem 1.4rem !important;
+    background: var(--yla-bg-card) !important;
+    border: 1px solid var(--yla-border) !important;
+    border-radius: var(--yla-radius-lg) !important;
+    box-shadow: var(--yla-shadow-sm);
+    flex-wrap: wrap;
+}
+.submit-row input[type="submit"],
+.submit-row button[type="submit"] {
+    background: var(--yla-text-primary); color: var(--yla-bg-card); border: none;
+    border-radius: var(--yla-radius-sm); padding: 0.55rem 1.5rem;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.12s;
+    display: inline-flex; align-items: center; gap: 0.35rem;
+}
+.submit-row input[type="submit"]:hover,
+.submit-row button[type="submit"]:hover { opacity: 0.85; }
+.submit-row .deletelink {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    margin-left: auto; padding: 0.55rem 1rem;
+    border: 1px solid #fecaca; border-radius: var(--yla-radius-sm);
+    background: #fef2f2; color: #dc2626; font-size: 0.82rem;
+    font-weight: 600; text-decoration: none; transition: all 0.12s;
+}
+.submit-row .deletelink:hover { background: #fee2e2; border-color: #ef4444; }
+.theme-dark .submit-row .deletelink { background: #450a0a; border-color: #7f1d1d; color: #fca5a5; }
+.theme-dark .submit-row .deletelink:hover { background: #7f1d1d; border-color: #ef4444; }
+
+/* ── 响应式 ── */
+@media (max-width: 900px) {
+    .form-row .yla-filter-widget.columns { flex-direction: column; }
+    .form-row .yla-filter-widget .column.is-2 { order: 0; }
+    .form-row .yla-filter-actions { flex-direction: row; justify-content: center; }
+}
+@media (max-width: 768px) {
+    .form-row { flex-direction: column; gap: 0.3rem; padding: 0.7rem 1rem; }
+    .form-row .form-label-side { max-width: none; padding-top: 0; }
+    .form-row input, .form-row textarea, .form-row select { max-width: none; }
+}

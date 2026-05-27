@@ -1,0 +1,268 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'zh-hans' }}" class="{% block html_class %}{% endblock %}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <meta name="description" content="{% block meta_description %}YanLeafAdmin — 基于 Django + Bulma 的极简白色现代后台管理系统主题框架{% endblock %}">
+    <meta name="keywords" content="Django Admin, Bulma CSS, 后台管理系统, 白色极简, 开源后台主题, YanLeafAdmin">
+    <meta name="author" content="zhouyanye">
+    <meta property="og:title" content="{% block og_title %}YanLeafAdmin 后台管理系统{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}极简白色现代后台主题体系，基于 Django + Bulma CSS 构建{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="YanLeafAdmin">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="YanLeafAdmin">
+    <meta name="twitter:description" content="极简白色现代后台主题体系">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <title>{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title|default:'YanLeafAdmin' }}{% endblock %}</title>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="{% static 'yanleafadmin/vendor/fontawesome/css/all.min.css' %}">
+
+    <!-- 主题 CSS（Bulma + 全局样式） -->
+    <link rel="stylesheet" href="{% static 'yanleafadmin/vendor/bulma/bulma.min.css' %}">
+    <link rel="stylesheet" href="{% static 'yanleafadmin/css/admin.css' %}">
+
+    {% block extrastyle %}{% endblock %}
+
+    <!-- 暗黑模式防闪烁 -->
+    <script>
+    (function() {
+        var theme = localStorage.getItem('yla-theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('theme-dark');
+        }
+    })();
+    </script>
+
+    {% block extrahead %}{% endblock %}
+    {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+</head>
+
+<body class="{% if is_popup %}yla-popup{% endif %}">
+    <div class="yanleaf-wrapper">
+
+        <!-- 移动端遮罩 -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- ========== 侧边栏 ========== -->
+        <aside class="yanleaf-sidebar" id="yanleaf-sidebar">
+            {% block sidebar_brand %}
+            <div class="sidebar-brand">
+                <a href="{% url 'admin:index' %}" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;">
+                    <span class="brand-icon"><i class="fas fa-crown"></i></span>
+                    <span class="brand-text">
+                        Yanleaf<span class="brand-sub">Admin</span>
+                    </span>
+                </a>
+            </div>
+            {% endblock %}
+
+            <nav class="sidebar-nav">
+                {% block sidebar_nav %}
+                {% if available_apps %}
+                {% for app in available_apps %}
+                <div class="sidebar-section">
+                    <p class="sidebar-section-title">{{ app.name }}</p>
+                    <ul class="sidebar-menu">
+                        {% for model in app.models %}
+                        <li>
+                            <a href="{{ model.admin_url }}" class="{% if request.path == model.admin_url %}active{% endif %}">
+                                <span class="menu-icon"><i class="fas {% if 'user' in model.object_name|lower %}fa-user{% elif 'group' in model.object_name|lower %}fa-users{% elif 'permission' in model.object_name|lower or 'perm' in model.object_name|lower %}fa-shield-alt{% elif 'log' in model.object_name|lower %}fa-history{% elif 'token' in model.object_name|lower %}fa-key{% else %}fa-table{% endif %}"></i></span>
+                                {{ model.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- 工具区 -->
+                <div class="sidebar-section">
+                    <p class="sidebar-section-title">{% translate '工具' %}</p>
+                    <ul class="sidebar-menu">
+                        <li><a href="/admin/erd/"><span class="menu-icon"><i class="fas fa-project-diagram"></i></span>{% translate 'ER 图' %}</a></li>
+                    </ul>
+                </div>
+
+                {% if not available_apps %}
+                <div class="sidebar-section">
+                    <p class="sidebar-section-title">{% translate '导航' %}</p>
+                    <ul class="sidebar-menu">
+                        <li><a href="{% url 'admin:index' %}"><span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>{% translate '控制台' %}</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+                {% endblock %}
+            </nav>
+
+            {% if YANLEAF_SHOW_CREDIT %}
+            <div class="sidebar-credit">
+                <span class="sidebar-credit-brand">YanLeafAdmin</span>
+                <a class="sidebar-credit-gh" href="https://github.com/zhouyanye/yanleafadmin" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i> zhouyanye
+                </a>
+            </div>
+            {% endif %}
+        </aside>
+
+        <!-- ========== 主区域 ========== -->
+        <div class="yanleaf-main">
+
+            <!-- 顶部栏 -->
+            <header class="yanleaf-topbar">
+                <div class="topbar-left">
+                    <button class="sidebar-toggle" id="sidebar-toggle" aria-label="菜单">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    {% block breadcrumbs %}
+                    <nav class="yanleaf-breadcrumbs">
+                        <a href="{% url 'admin:index' %}">{% translate '首页' %}</a>
+                        {% if title %}
+                        <span class="separator">&rsaquo;</span>
+                        <span>{{ title }}</span>
+                        {% endif %}
+                    </nav>
+                    {% endblock %}
+                </div>
+
+                <div class="topbar-right">
+                    {% block topbar_actions %}{% endblock %}
+
+                    <!-- 暗黑模式切换 -->
+                    <button class="icon-btn" id="dark-mode-toggle" title="{% translate '切换暗黑模式' %}">
+                        <i class="fas fa-moon" id="dark-mode-icon"></i>
+                    </button>
+
+                    <!-- 语言切换 -->
+                    {% block language_switcher %}
+                    <div class="dropdown is-right" id="lang-dropdown">
+                        <div class="dropdown-trigger">
+                            <button class="icon-btn" title="{% translate '切换语言' %}">
+                                <i class="fas fa-language"></i>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" role="menu">
+                            <div class="dropdown-content">
+                                <form action="{% url 'set_language' %}" method="post" class="is-hidden" id="lang-form-zh-hans">
+                                    {% csrf_token %}
+                                    <input name="language" value="zh-hans">
+                                </form>
+                                <a href="#" class="dropdown-item" onclick="document.getElementById('lang-form-zh-hans').submit();return false;">
+                                    &#20013;&#25991;&#31616;&#20307;
+                                </a>
+                                <form action="{% url 'set_language' %}" method="post" class="is-hidden" id="lang-form-en">
+                                    {% csrf_token %}
+                                    <input name="language" value="en">
+                                </form>
+                                <a href="#" class="dropdown-item" onclick="document.getElementById('lang-form-en').submit();return false;">
+                                    English
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endblock %}
+
+                    <!-- 用户菜单 -->
+                    {% block user_menu %}
+                    {% if user.is_authenticated and user.is_staff %}
+                    <div class="dropdown is-right" id="user-dropdown">
+                        <div class="dropdown-trigger">
+                            <button class="user-dropdown-toggle">
+                                <span class="user-avatar">{{ user.username|slice:":1"|upper }}</span>
+                                <span>{{ user.get_short_name|default:user.username }}</span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" role="menu">
+                            <div class="dropdown-content">
+                                <a href="{% url 'admin:password_change' %}" class="dropdown-item">
+                                    <i class="fas fa-key"></i> {% translate '修改密码' %}
+                                </a>
+                                <hr class="dropdown-divider">
+                                <form action="{% url 'admin:logout' %}" method="post" id="logout-form">
+                                    {% csrf_token %}
+                                    <a href="#" class="dropdown-item has-text-danger"
+                                       onclick="document.getElementById('logout-form').submit();return false;">
+                                        <i class="fas fa-sign-out-alt mr-2"></i> {% translate '注销' %}
+                                    </a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endblock %}
+                </div>
+            </header>
+
+            <!-- 内容区 -->
+            <main class="yanleaf-content">
+
+                {% block pretitle %}{% endblock %}
+
+                {% block content_title %}
+                {% if title %}
+                <div class="page-header">
+                    <h1 class="page-title">{{ title }}</h1>
+                    {% if subtitle %}<p class="page-subtitle">{{ subtitle }}</p>{% endif %}
+                </div>
+                {% endif %}
+                {% endblock %}
+
+                <!-- Django Messages 序列化为 JSON -->
+                {% block messages %}
+                {% if messages %}
+                <script id="django-messages" type="application/json">
+                [
+                    {% for msg in messages %}
+                    {"level": "{{ msg.level_tag }}", "message": "{{ msg.message|escapejs }}", "tags": "{{ msg.extra_tags|default:'' }}"}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]
+                </script>
+                {% endif %}
+                {% endblock %}
+
+                <!-- Toast 容器 -->
+                <div class="yla-toast-container" id="yla-toast-container"></div>
+
+                {% block content %}
+                {{ content }}
+                {% endblock %}
+                {% block sidebar %}{% endblock %}
+            </main>
+
+        </div>
+    </div>
+
+    <!-- ============================================================
+    本地脚本库 (全局)
+    ============================================================ -->
+    <script src="{% static 'yanleafadmin/vendor/jquery/jquery.min.js' %}"></script>
+    <script>var django = django || {}; django.jQuery = jQuery.noConflict();</script>
+    <script src="{% static 'yanleafadmin/vendor/sweetalert2/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'yanleafadmin/vendor/echarts/echarts.min.js' %}"></script>
+
+    <!-- ============================================================
+    YanLeafAdmin 核心脚本
+    ============================================================ -->
+    <script>window.YLA=window.YLA||{};window.YLA.lang='{{ request.LANGUAGE_CODE|default:"zh-hans" }}';</script>
+<script>window.YLA.aiEnabled = {{ YANLEAF_CONFIG.ai_assistant_enabled|default:True|yesno:'true,false' }};</script>
+    <script src="{% static 'yanleafadmin/js/core.js' %}"></script>
+    <script src="{% static 'yanleafadmin/js/components.js' %}"></script>
+    <script src="{% static 'yanleafadmin/js/smart-chart.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+
+    <!-- 穿梭框重写 -->
+    <script src="{% static 'yanleafadmin/js/filter-widget.js' %}"></script>
+
+    <!-- AI 搜索助手 -->
+    <script src="{% static 'ai/ai-search.js' %}"></script>
+
+</body>
+</html>
