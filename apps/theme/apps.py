@@ -7,14 +7,30 @@ class ThemeConfig(AppConfig):
     
     def ready(self):
         from django.contrib import admin
+        from django.conf import settings as django_settings
         from .settings import get_config
 
         config = get_config()
 
-        # 登录验证码
+        # 自动注入 context processor（pip 用户不用手动配置）
+        cp_path = 'apps.theme.context_processors.yanleaf_settings'
+        for tpl in django_settings.TEMPLATES:
+            opts = tpl.get('OPTIONS', {})
+            cps = opts.get('context_processors', [])
+            if cp_path not in cps:
+                cps = list(cps)
+                cps.append(cp_path)
+                opts['context_processors'] = cps
+
+        # 登录验证码（可选）
         if config.get('login_captcha'):
-            from .forms import YanleafAdminLoginForm
-            admin.site.login_form = YanleafAdminLoginForm
+            try:
+                from django.apps import apps as _apps
+                _apps.get_app_config('captcha')
+                from .forms import YanleafAdminLoginForm
+                admin.site.login_form = YanleafAdminLoginForm
+            except (LookupError, ImportError):
+                pass  # captcha 未安装或未注册
 
         # 每页条数
         from django.contrib.admin import ModelAdmin
