@@ -12,8 +12,13 @@
 
     function loadCfg() { try { return JSON.parse(localStorage.getItem('yla_ai_config') || '{}'); } catch(e) { return {}; } }
     function saveCfg(c) { localStorage.setItem('yla_ai_config', JSON.stringify(c)); }
+    function sessionId() {
+        var id = localStorage.getItem('yla_ai_session');
+        if (!id) { id = 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); localStorage.setItem('yla_ai_session', id); }
+        return id;
+    }
 
-    var T = '#485fc7'; // YanLeafAdmin 主题色
+    var T = '#485fc7';
 
     var html = '' +
     '<div id="yla-ai-widget">' +
@@ -139,13 +144,15 @@
     $('#yla-ai-settings-back').on('click', function() { $settings.hide(); $panel.show(); $input.focus(); });
     // 新窗口展开
     $('#yla-ai-expand').on('click', function() {
-        window.open('/api/ai/full/', '_blank');
+        window.open('/api/ai/full/' + sessionId() + '/', '_blank');
     });
 
     $('#yla-ai-clear-chat').on('click', function() {
         $body.find('.yla-ai-msg').remove();
         $body.append('<div class="yla-ai-msg ai-bot"><div class="yla-ai-bubble">对话已清空。<br><br>你可以继续问我数据问题，比如：<br>• "最近 7 天新增了多少用户？"<br>• "每个组有多少用户？"<br>• "活跃用户占比是多少？"</div></div>');
         $body.scrollTop($body[0].scrollHeight);
+        // Clear from server
+        $.ajax({ url: '/api/ai/history/?session=' + sessionId(), method: 'DELETE', headers: { 'X-CSRFToken': window.YLA.csrfToken || '' } });
     });
 
     function loadCfgForm() {
@@ -177,7 +184,7 @@
         var label = type === 'bot' ? '<span class="ai-gen-label">AI 生成</span>' : '';
         $body.append('<div class="yla-ai-msg ' + cls + '"><div class="yla-ai-bubble">' + html + label + '</div></div>');
         $body.scrollTop($body[0].scrollHeight);
-        saveHistory();
+        _queueSave();
     }
     function addTyping() {
         var $t = $('<div class="yla-ai-msg ai-bot"><div class="yla-ai-typing"><span></span><span></span><span></span></div></div>');
@@ -228,31 +235,41 @@
         }
     }
 
-    function saveHistory() {
+    var _saveTimer = null;
+    function _queueSave() {
+        clearTimeout(_saveTimer);
+        _saveTimer = setTimeout(_doSave, 500);
+    }
+    function _doSave() {
         var msgs = [];
+        var title = '';
         $('#yla-ai-body .yla-ai-msg').each(function() {
             var type = $(this).hasClass('ai-user') ? 'user' : 'bot';
             var html = $(this).find('.yla-ai-bubble').html();
-            msgs.push({ type: type, html: html });
+            if (!title && type === 'user') title = $(this).find('.yla-ai-bubble').text().substring(0, 50);
+            msgs.push({ role: type, content: html });
         });
-        // Keep only last 50 messages
         if (msgs.length > 50) msgs = msgs.slice(-50);
-        try { localStorage.setItem('yla_ai_history', JSON.stringify(msgs)); } catch(e) {}
+        if (!msgs.length) return;
+        $.ajax({
+            url: '/api/ai/history/', method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ session: sessionId(), title: title, messages: msgs }),
+            headers: { 'X-CSRFToken': window.YLA.csrfToken || '' }
+        });
     }
 
     function loadHistory() {
-        try {
-            var msgs = JSON.parse(localStorage.getItem('yla_ai_history') || '[]');
-            if (msgs.length) {
-                $('#yla-ai-body').empty();
-                msgs.forEach(function(m) { addMsgSilent(m.type, m.html); });
+        $.getJSON('/api/ai/history/?session=' + sessionId(), function(data) {
+            if (data.messages && data.messages.length) {
+                $body.empty();
+                data.messages.forEach(function(m) {
+                    var cls = m.role === 'user' ? 'ai-user' : 'ai-bot';
+                    var label = m.role === 'bot' ? '<span class="ai-gen-label">AI 生成</span>' : '';
+                    $body.append('<div class="yla-ai-msg ' + cls + '"><div class="yla-ai-bubble">' + (m.content || '') + label + '</div></div>');
+                });
                 $body.scrollTop($body[0].scrollHeight);
             }
-        } catch(e) {}
-    }
-
-    function addMsgSilent(type, html) {
-        var cls = type === 'user' ? 'ai-user' : 'ai-bot';
-        $body.append('<div class="yla-ai-msg ' + cls + '"><div class="yla-ai-bubble">' + html + '</div></div>');
+        });
     }
 })(jQuery);

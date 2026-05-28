@@ -33,12 +33,25 @@
     .theme-dark .ai-full-msg.bot .ai-full-bubble { background:#2a2a3a;color:#ddd; }
     .theme-dark #ai-full-input { background:#2a2a3a;border-color:#444;color:#ddd; }
     .theme-dark .ai-full-example { background:#2a2a3a; }
+    .ai-session-bar { display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--yla-bg-card,#fff);border:1px solid var(--yla-border,#e5e5e5);border-bottom:none;border-radius:12px 12px 0 0;font-size:.78rem }
+    .ai-session-bar select { padding:4px 8px;border:1px solid var(--yla-border,#ddd);border-radius:4px;font-size:.78rem;background:var(--yla-bg-input);color:var(--yla-text-primary) }
+    .ai-session-bar a { color:var(--yla-text-muted);text-decoration:none;font-size:.75rem }
+    .ai-session-bar a:hover { color:#485fc7 }
+    .theme-dark .ai-session-bar { background:#1e1e2e;border-color:#333 }
+    .theme-dark .ai-session-bar select { background:#2a2a3a;border-color:#444;color:#ddd }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="ai-full-wrap">
-    <div id="ai-full-body" class="ai-full-body">
+    <div class="ai-session-bar" id="ai-session-bar">
+        <span style="font-weight:600;">历史对话</span>
+        <select id="ai-session-select" onchange="loadSession(this.value)">
+            <option value="">新对话</option>
+        </select>
+        <a href="/api/ai/full/" style="margin-left:auto;">+ 新建</a>
+    </div>
+    <div id="ai-full-body" class="ai-full-body" style="border-radius:0 0 12px 12px;">
         <div class="ai-full-empty">
             <i class="fas fa-robot"></i>
             <p style="font-size:1.1rem;font-weight:600;">AI 数据助手</p>
@@ -66,6 +79,7 @@
     var $input = document.getElementById('ai-full-input');
     var $body = document.getElementById('ai-full-body');
     var hasMsg = false;
+    var sid = '{{ session_id|default:"" }}';
 
     function loadCfg() {
         try { return JSON.parse(localStorage.getItem('yla_ai_config') || '{}'); } catch(e) { return {}; }
@@ -79,6 +93,24 @@
         d.innerHTML = '<div class="ai-full-bubble">' + html + label + '</div>';
         $body.appendChild(d);
         $body.scrollTop = $body.scrollHeight;
+        if (sid) _queueSave();
+    }
+    var _fst = null;
+    function _queueSave() { clearTimeout(_fst); _fst = setTimeout(_doSave, 500); }
+    function _doSave() {
+        var msgs = [], title = '';
+        [].forEach.call($body.querySelectorAll('.ai-full-msg'), function(el) {
+            var ty = el.classList.contains('user') ? 'user' : 'bot';
+            var h = el.querySelector('.ai-full-bubble').innerHTML;
+            if (!title && ty === 'user') title = el.querySelector('.ai-full-bubble').textContent.substring(0, 50);
+            msgs.push({ role: ty, content: h });
+        });
+        if (!msgs.length) return;
+        var x = new XMLHttpRequest();
+        x.open('POST', '/api/ai/history/');
+        x.setRequestHeader('Content-Type', 'application/json');
+        x.setRequestHeader('X-CSRFToken', window.YLA.csrfToken || '');
+        x.send(JSON.stringify({ session: sid, title: title, messages: msgs }));
     }
     function addTyping() {
         if (!hasMsg) { $body.innerHTML = ''; hasMsg = true; }
@@ -138,6 +170,44 @@
     window.quickAsk = function(el) { $input.value = el.textContent; send(); };
     document.getElementById('ai-full-send').onclick = send;
     $input.onkeydown = function(e) { if (e.key === 'Enter') send(); };
+    // 加载会话列表
+    function loadSessions() {
+        var x = new XMLHttpRequest();
+        x.open('GET', '/api/ai/sessions/');
+        x.onload = function() {
+            try { var d = JSON.parse(x.responseText);
+                var sel = document.getElementById('ai-session-select');
+                if (d.sessions) d.sessions.forEach(function(s) {
+                    var o = document.createElement('option');
+                    o.value = s.id; o.textContent = s.title; o.selected = (s.id === sid);
+                    sel.appendChild(o);
+                });
+            } catch(e) {}
+        }; x.send();
+    }
+    window.loadSession = function(id) {
+        if (id) { window.location.href = '/api/ai/full/' + id + '/'; }
+        else { window.location.href = '/api/ai/full/'; }
+    };
+    loadSessions();
+
+    if (sid) {
+        var xh = new XMLHttpRequest();
+        xh.open('GET', '/api/ai/history/?session=' + sid);
+        xh.onload = function() {
+            try { var d = JSON.parse(xh.responseText); if (d.messages && d.messages.length) {
+                $body.innerHTML = ''; hasMsg = true;
+                d.messages.forEach(function(m) {
+                    var cls = m.role === 'user' ? 'user' : 'bot';
+                    var label = m.role === 'bot' ? '<span class="ai-gen-tag">AI 生成</span>' : '';
+                    var el = document.createElement('div'); el.className = 'ai-full-msg ' + cls;
+                    el.innerHTML = '<div class="ai-full-bubble">' + (m.content || '') + label + '</div>';
+                    $body.appendChild(el);
+                });
+                $body.scrollTop = $body.scrollHeight;
+            }} catch(e) {}
+        }; xh.send();
+    }
 })();
 </script>
 {% endblock %}

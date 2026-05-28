@@ -135,9 +135,17 @@
     background: #450a0a; border-color: #7f1d1d; color: #fca5a5;
 }
 .theme-dark #changelist-filter .clear-filters:hover { background: #7f1d1d; color: #fecaca; }
-#changelist-filter h3 { font-size: 0.72rem; font-weight: 600; color: var(--yla-text-primary); margin: 0.65rem 0 0.3rem; }
+#changelist-filter h3 { font-size: 0.72rem; font-weight: 600; color: var(--yla-text-primary); margin: 0.65rem 0 0.3rem; cursor: pointer; user-select: none; }
+#changelist-filter h3::after { content: ' ▾'; font-size: 0.6rem; }
+#changelist-filter h3.collapsed::after { content: ' ▸'; }
 #changelist-filter ul { margin: 0; padding: 0; list-style: none; }
+#changelist-filter ul.collapsed li:nth-child(n+6) { display: none; }
+#changelist-filter ul.collapsed + .yla-filter-toggle { display: block; }
+#changelist-filter .yla-filter-toggle { display: none; font-size: 0.65rem; color: var(--yla-text-muted); cursor: pointer; padding: 2px 4px; }
+#changelist-filter .yla-filter-toggle:hover { color: var(--yla-text-primary); }
 #changelist-filter li { padding: 0.08rem 0; }
+#changelist-filter li:nth-child(n+6) { display: none; }
+#changelist-filter ul.expanded li { display: block; }
 #changelist-filter a {
     font-size: 0.75rem; color: var(--yla-text-secondary); text-decoration: none;
     display: block; padding: 0.18rem 0.4rem; border-radius: 4px;

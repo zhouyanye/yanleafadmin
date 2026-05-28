@@ -158,10 +158,9 @@ class AIQueryService:
                         })
                     result_data = list(qs[:parsed.get('limit', 30)])
                 else:
-                    # Normalize order_by: AI might say "-count" but annotation is "_count"
+                    # Normalize order_by: AI might return "-count" but annotation is "_count"
                     order = parsed.get('order_by', '-_count')
                     if order in ('count', '-count'):
-                        order = '-' + order if order.startswith('-') else order
                         order = order.replace('count', '_count')
                     qs = qs.values(gb_field).annotate(_count=Count('id')).order_by(order)
                     chart_data = []

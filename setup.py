@@ -3,11 +3,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='yanleafadmin',
-    version='2.0.8',
+    version='2.1.0',
     description='极简白色现代 Django Admin 主题体系 — 基于 Django + Bulma CSS',
     long_description=open('README.md', encoding='utf-8').read() if __import__('os').path.exists('README.md') else '',
     long_description_content_type='text/markdown',
-    author='zhouyanye',
+    author='zhouyanye,YanLeaf AI Lab',
+    email='yanleaf@yanleaf.com',
     url='https://github.com/zhouyanye/yanleafadmin',
     packages=find_packages(include=['apps', 'apps.*', 'yanleafadmin']),
     include_package_data=True,

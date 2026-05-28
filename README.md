@@ -10,6 +10,8 @@
 - 侧边栏导航 + 顶部面包屑 + 用户菜单
 - 登录页验证码（django-simple-captcha）
 
+![首页](screenshots/dashboard.png)
+
 ### 组件与交互
 - **DataTables**：列表页一键导出 Excel / CSV / 打印
 - **SweetAlert2**：编辑/删除确认弹窗，Toast 弱提示
@@ -17,11 +19,15 @@
 - **Dropzone**：拖拽文件上传
 - **穿梭框重写**：Bulma 卡片式左右选择器
 
+![列表页](screenshots/change-list.png)
+
 ### 可视化引擎
 - **SmartChart**：根据 Model 字段类型自动生成 ECharts 图表（趋势/饼图/柱状图）
 - **仪表盘热力图**：近半年操作活跃度（类 GitHub 绿格子墙）
 - **模块玫瑰图**：近 7 天模块活跃度分布
 - **系统动态时间线**：10 条最新操作记录，Badge 四级颜色标记，展开变更 Diff
+
+![系统日志](screenshots/activity.png)
 
 ### ER 图引擎
 - **Django 模型直读**：一键生成当前项目所有表的实体关系图
@@ -31,14 +37,18 @@
 - **中英文切换**：中文优先 COMMENT 注释，英文用原名
 - **导出 PNG** + **导出 Word 三线表 (.docx)**
 
+![ER图](screenshots/er-diagram.png)
+
 ### AI 数据助手
 - **右下角悬浮聊天机器人**，点击即可对话
 - **自然语言查询**：基于 DeepSeek 驱动，自动转 Django ORM
 - **ECharts 图表**：查询结果原地渲染折线图/饼图/柱状图
 - **多模型支持**：DeepSeek Chat / Reasoner / GPT-4o / 通义千问
 - **配置保存在浏览器**：API Key 不上传服务器
-- **聊天历史**：localStorage 持久化最近 50 条对话
-- **全屏展开**：新标签页全屏对话
+- **聊天历史**：数据库持久化，支持多会话管理，会话 UUID 可分享
+- **全屏展开**：新标签页全屏对话，历史记录下拉切换
+
+![AI助手](screenshots/ai-assistant.png)
 
 ### 开发者体验
 - **pip install**：`pip install yanleafadmin`
@@ -210,6 +220,7 @@ yanleaf_admin_project/
 ├── yanleafadmin/                  # pip 入口包（代理 apps/theme）
 │   ├── __init__.py
 │   └── apps.py
+├── screenshots/                   # 截图
 ├── docs/                          # 文档与设计规格
 ├── setup.py                       # pip 安装包
 ├── MANIFEST.in
@@ -224,7 +235,7 @@ yanleaf_admin_project/
 from django.urls import path, include
 
 urlpatterns = [
-    path('i18n/', include('django.conf.urls.i18n')),   # 语言切换（必须）
+    path('i18n/', include('django.conf.urls.i18n')),   # 语言切换
     path('admin/', admin.site.urls),
     path('admin/erd/', include('apps.erd_engine.urls')),  # ER 图
     path('api/ai/', include('apps.ai_assistant.urls')),   # AI 助手

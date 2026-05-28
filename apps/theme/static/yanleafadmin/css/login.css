@@ -40,11 +40,13 @@
 .login-page .captcha-field-wrapper { display: flex; align-items: center; gap: 12px; }
 .login-page .captcha-field-wrapper img.captcha {
     border-radius: var(--yla-radius-sm); border: 1px solid var(--yla-border);
-    cursor: pointer; height: 45px; flex-shrink: 0;
+    cursor: pointer; height: 40px; flex-shrink: 0; width: auto;
 }
+.login-page .captcha-field-wrapper br { display: none; }
 
-.yla-captcha-input {
-    flex: 1; height: 40px;
+.yla-captcha-input, #id_captcha_1 {
+    flex: 1; height: 40px; width: 100%;
+    max-width: 100%;
     padding: 0.5em 0.75em;
     border: 1px solid var(--yla-border, #dbdbdb);
     border-radius: 8px;

@@ -151,6 +151,26 @@
         }
     }
 
+    /* ── 筛选自动折叠（超过5条的列表先收起来）─── */
+    $('#changelist-filter ul').each(function() {
+        var $ul = $(this);
+        if ($ul.find('li').length > 5) {
+            $ul.addClass('collapsed');
+            $ul.after('<span class="yla-filter-toggle">展开全部 (' + $ul.find('li').length + ')</span>');
+        }
+    });
+    $('#changelist-filter').on('click', '.yla-filter-toggle', function() {
+        var $btn = $(this);
+        var $ul = $btn.prev('ul');
+        var expanded = $ul.hasClass('expanded');
+        $ul.toggleClass('expanded', !expanded).toggleClass('collapsed', expanded);
+        $btn.text(expanded ? '展开全部 (' + $ul.find('li').length + ')' : '收起');
+    });
+    // 点击 h3 折叠整个 filter 组
+    $('#changelist-filter h3').on('click', function() {
+        $(this).toggleClass('collapsed').next('ul').slideToggle(150);
+    });
+
     /* ── DataTables 导出（按钮注入到 Django 动作栏）─── */
     if ($('#result_list').length) {
         var langCode = window.YLA.lang || 'zh-hans';

@@ -12,6 +12,10 @@ class ThemeConfig(AppConfig):
 
         config = get_config()
 
+        # 登出后重定向到登录页
+        if not getattr(django_settings, 'LOGOUT_REDIRECT_URL', None):
+            django_settings.LOGOUT_REDIRECT_URL = '/admin/login/'
+
         # 自动注入 context processor（pip 用户不用手动配置）
         cp_path = 'apps.theme.context_processors.yanleaf_settings'
         for tpl in django_settings.TEMPLATES:
