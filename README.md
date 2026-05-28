@@ -34,7 +34,7 @@
 ### AI 数据助手
 - **右下角悬浮聊天机器人**，点击即可对话
 - **自然语言查询**：基于 DeepSeek 驱动，自动转 Django ORM
-- **SmartChart 渲染**：查询结果原地生成图表
+- **ECharts 图表**：查询结果原地渲染折线图/饼图/柱状图
 - **多模型支持**：DeepSeek Chat / Reasoner / GPT-4o / 通义千问
 - **配置保存在浏览器**：API Key 不上传服务器
 - **聊天历史**：localStorage 持久化最近 50 条对话
@@ -78,33 +78,49 @@ import os, sys
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 ```
 
-#### 最少配置（只用主题 + 仪表盘）
+#### 一行启用（主题 + 仪表盘，开箱即用）
 
 ```python
 INSTALLED_APPS = [
-    'yanleafadmin',              # 主题（必须在 admin 前面，一行搞定）
+    'yanleafadmin',              # 一行搞定主题和仪表盘
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'captcha',                   # 登录验证码
-    'apps.users.apps.UsersConfig',
-    'apps.dashboard_engine.apps.DashboardEngineConfig',
 ]
-
-AUTH_USER_MODEL = 'users.User'
 ```
 
-#### 完整配置（含 ER 图 + AI 助手）
+> 仪表盘首页自动启用（统计卡片 + 热力图 + 玫瑰图 + 系统动态时间线）。
 
-在最少配置基础上追加：
+#### 可选：启用语言切换
 
 ```python
-INSTALLED_APPS += [
-    'apps.erd_engine.apps.ErdEngineConfig',
-    'apps.ai_assistant.apps.AiAssistantConfig',
+# urls.py
+urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),
+    ...
+]
+```
+
+#### 可选：启用登录验证码
+
+```python
+INSTALLED_APPS += ['captcha']
+```
+
+#### 可选：启用 ER 图 / AI 助手 / SmartChart
+
+这些功能需要额外配置 URL 路由：
+
+```python
+# urls.py
+urlpatterns = [
+    ...
+    path('admin/erd/', include('apps.erd_engine.urls')),   # ER 图
+    path('api/ai/', include('apps.ai_assistant.urls')),     # AI 助手
+    path('yla-api/', include('apps.theme.urls')),            # SmartChart
 ]
 ```
 

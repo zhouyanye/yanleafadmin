@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='yanleafadmin',
-    version='2.0.4',
+    version='2.0.5',
     description='极简白色现代 Django Admin 主题体系 — 基于 Django + Bulma CSS',
     long_description=open('README.md', encoding='utf-8').read() if __import__('os').path.exists('README.md') else '',
     long_description_content_type='text/markdown',
