@@ -34,7 +34,7 @@ class ThemeConfig(AppConfig):
 
         # 每页条数
         from django.contrib.admin import ModelAdmin
-        ModelAdmin.list_per_page = config.get('datatables_page_length', 25)
+        ModelAdmin.list_per_page = config.get('datatables_page_length', 10)
 
         # 保留 per_page 参数补丁
         self._patch_changelist_per_page()

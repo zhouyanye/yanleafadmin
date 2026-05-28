@@ -116,7 +116,8 @@
 /* ── 筛选 ── */
 #changelist-filter {
     background: var(--yla-bg-card); border-left: 1px solid var(--yla-border);
-    padding: 1rem; width: 190px; flex-shrink: 0; transition: all 0.2s ease;
+    padding: 1rem; width: 180px; flex-shrink: 0; transition: all 0.2s ease;
+    max-height: 70vh; overflow-y: auto;
 }
 #changelist-filter.is-collapsed { display: none; }
 #changelist-filter h2 {

@@ -82,6 +82,15 @@
                 {% endfor %}
                 {% endif %}
 
+                {% if YLA_HAS_ERD %}
+                <div class="sidebar-section">
+                    <p class="sidebar-section-title">{% translate '工具' %}</p>
+                    <ul class="sidebar-menu">
+                        <li><a href="/admin/erd/"><span class="menu-icon"><i class="fas fa-project-diagram"></i></span>{% translate 'ER 图' %}</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+
                 {% if not available_apps %}
                 <div class="sidebar-section">
                     <p class="sidebar-section-title">{% translate '导航' %}</p>
