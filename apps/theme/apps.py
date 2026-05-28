@@ -47,7 +47,20 @@ class ThemeConfig(AppConfig):
             dashboard_cfg.path = __import__('os').path.dirname(apps.dashboard_engine.__file__)
             dashboard_cfg.ready()
         except Exception:
-            pass  # 仪表盘可选
+            pass
+
+        # ER 图引擎（自动添加模板目录，无需注册 app）
+        try:
+            import apps.erd_engine
+            erd_tpl = __import__('os').path.join(
+                __import__('os').path.dirname(apps.erd_engine.__file__), 'templates')
+            for tpl in django_settings.TEMPLATES:
+                dirs = list(tpl.get('DIRS', []))
+                if erd_tpl not in dirs:
+                    dirs.append(erd_tpl)
+                    tpl['DIRS'] = dirs
+        except Exception:
+            pass
 
     def _patch_changelist_per_page(self):
         from django.contrib.admin.views.main import ChangeList
